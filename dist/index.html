@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#070a10" />
+    <meta name="description" content="NOSTORYX isolated developer labs for movement, combat, monsters, VFX, crafting and HUD testing." />
+    <title>NOSTORYX — Dev Labs</title>
+    <link rel="stylesheet" href="./public/styles.css" />
+  </head>
+  <body>
+    <main id="app-shell">
+      <div id="game-root" aria-label="NOSTORYX developer labs"></div>
+      <div id="boot-status" role="status">
+        <span class="boot-mark">N</span>
+        <span>Booting Dev Labs…</span>
+      </div>
+    </main>
+
+    <noscript>NOSTORYX Dev Labs requires JavaScript.</noscript>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@4.2.1/dist/phaser.min.js"></script>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

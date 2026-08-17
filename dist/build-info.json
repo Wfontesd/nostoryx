@@ -1,0 +1,9 @@
+{
+  "build": "1f02596bded4e8b9ebf44e298a314c9e193c5cd6",
+  "ref": "agent/visual-quality-gauntlet",
+  "builtAt": "2026-08-17T23:49:49.985Z",
+  "generatedAtlas": {
+    "bytes": 86710,
+    "frames": 46
+  }
+}

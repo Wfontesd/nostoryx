@@ -1,0 +1,8 @@
+NOSTORYX visual QA: FAIL
+Scenarios: 9
+Failures: 5
+- movement-desktop: controller did not run and jump through the first platform
+- combat-desktop: keyboard attacks did not damage the target
+- combat-desktop: combo state never advanced during an impact window
+- hub-mobile: hub-mobile.png is suspiciously small (84119 bytes)
+- combat-mobile: combat-mobile.png is suspiciously small (69982 bytes)

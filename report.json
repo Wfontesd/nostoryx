@@ -1,0 +1,813 @@
+{
+  "generatedAt": "2026-08-17T23:50:21.559Z",
+  "baseUrl": "http://127.0.0.1:4173",
+  "runId": "32082063211",
+  "sourceSha": "1f02596bded4e8b9ebf44e298a314c9e193c5cd6",
+  "scenarios": [
+    {
+      "name": "hub-desktop",
+      "scene": "LabHub",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "before": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 1280,
+          "height": 720,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": null,
+          "playerY": null,
+          "dummyHp": null,
+          "dummyMaxHp": null,
+          "combo": null,
+          "monsterCount": null,
+          "selectedIndex": 1,
+          "logs": null,
+          "inventoryOpen": null,
+          "hp": null,
+          "level": null,
+          "artVisible": true,
+          "targetVisible": null,
+          "keyBindingsReady": true
+        }
+      },
+      "after": 1,
+      "captures": [
+        {
+          "file": "hub-desktop.png",
+          "bytes": 455304,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        }
+      ],
+      "consoleErrors": [],
+      "consoleWarnings": [],
+      "pageErrors": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "name": "movement-desktop",
+      "scene": "MovementLab",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "before": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 1280,
+          "height": 720,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": 135,
+          "playerY": 611.5,
+          "dummyHp": null,
+          "dummyMaxHp": null,
+          "combo": null,
+          "monsterCount": null,
+          "selectedIndex": null,
+          "logs": null,
+          "inventoryOpen": null,
+          "hp": null,
+          "level": null,
+          "artVisible": true,
+          "targetVisible": null,
+          "keyBindingsReady": true
+        }
+      },
+      "after": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 1280,
+          "height": 720,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": 203.13333333333344,
+          "playerY": 611.5,
+          "dummyHp": null,
+          "dummyMaxHp": null,
+          "combo": null,
+          "monsterCount": null,
+          "selectedIndex": null,
+          "logs": null,
+          "inventoryOpen": null,
+          "hp": null,
+          "level": null,
+          "artVisible": true,
+          "targetVisible": null,
+          "keyBindingsReady": true
+        }
+      },
+      "captures": [
+        {
+          "file": "movement-initial.png",
+          "bytes": 295222,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        },
+        {
+          "file": "movement-course.png",
+          "bytes": 293220,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        }
+      ],
+      "consoleErrors": [],
+      "consoleWarnings": [],
+      "pageErrors": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "failures": [
+        "controller did not run and jump through the first platform"
+      ],
+      "passed": false
+    },
+    {
+      "name": "combat-desktop",
+      "scene": "CombatLab",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "before": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 1280,
+          "height": 720,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": 310,
+          "playerY": 609.5,
+          "dummyHp": 240,
+          "dummyMaxHp": 240,
+          "combo": 0,
+          "monsterCount": null,
+          "selectedIndex": null,
+          "logs": null,
+          "inventoryOpen": null,
+          "hp": null,
+          "level": null,
+          "artVisible": true,
+          "targetVisible": true,
+          "keyBindingsReady": true
+        }
+      },
+      "after": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 1280,
+          "height": 720,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": 731,
+          "playerY": 679.5,
+          "dummyHp": 240,
+          "dummyMaxHp": 240,
+          "combo": 0,
+          "monsterCount": null,
+          "selectedIndex": null,
+          "logs": null,
+          "inventoryOpen": null,
+          "hp": null,
+          "level": null,
+          "artVisible": true,
+          "targetVisible": true,
+          "keyBindingsReady": true
+        }
+      },
+      "captures": [
+        {
+          "file": "combat-initial.png",
+          "bytes": 332172,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        },
+        {
+          "file": "combat-light-impact.png",
+          "bytes": 338828,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        },
+        {
+          "file": "combat-heavy-impact.png",
+          "bytes": 338792,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        },
+        {
+          "file": "combat-arc-surge.png",
+          "bytes": 329319,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        }
+      ],
+      "consoleErrors": [],
+      "consoleWarnings": [],
+      "pageErrors": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "failures": [
+        "keyboard attacks did not damage the target",
+        "combo state never advanced during an impact window"
+      ],
+      "passed": false
+    },
+    {
+      "name": "monsters-desktop",
+      "scene": "MonsterLab",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "before": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 1280,
+          "height": 720,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": 240,
+          "playerY": 609.5,
+          "dummyHp": null,
+          "dummyMaxHp": null,
+          "combo": null,
+          "monsterCount": 3,
+          "selectedIndex": null,
+          "logs": null,
+          "inventoryOpen": null,
+          "hp": null,
+          "level": null,
+          "artVisible": true,
+          "targetVisible": null,
+          "keyBindingsReady": true
+        }
+      },
+      "after": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 1280,
+          "height": 720,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": 610,
+          "playerY": 609.5,
+          "dummyHp": null,
+          "dummyMaxHp": null,
+          "combo": null,
+          "monsterCount": 6,
+          "selectedIndex": null,
+          "logs": null,
+          "inventoryOpen": null,
+          "hp": null,
+          "level": null,
+          "artVisible": true,
+          "targetVisible": null,
+          "keyBindingsReady": true
+        }
+      },
+      "captures": [
+        {
+          "file": "monsters-initial.png",
+          "bytes": 325744,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        },
+        {
+          "file": "monsters-ai-engaged.png",
+          "bytes": 339329,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        }
+      ],
+      "consoleErrors": [],
+      "consoleWarnings": [],
+      "pageErrors": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "name": "vfx-desktop",
+      "scene": "VfxLab",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "before": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 1280,
+          "height": 720,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": null,
+          "playerY": null,
+          "dummyHp": null,
+          "dummyMaxHp": null,
+          "combo": null,
+          "monsterCount": null,
+          "selectedIndex": null,
+          "logs": null,
+          "inventoryOpen": null,
+          "hp": null,
+          "level": null,
+          "artVisible": true,
+          "targetVisible": true,
+          "keyBindingsReady": true
+        }
+      },
+      "after": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 1280,
+          "height": 720,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": null,
+          "playerY": null,
+          "dummyHp": null,
+          "dummyMaxHp": null,
+          "combo": null,
+          "monsterCount": null,
+          "selectedIndex": null,
+          "logs": null,
+          "inventoryOpen": null,
+          "hp": null,
+          "level": null,
+          "artVisible": true,
+          "targetVisible": true,
+          "keyBindingsReady": true
+        }
+      },
+      "captures": [
+        {
+          "file": "vfx-initial.png",
+          "bytes": 326218,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        },
+        {
+          "file": "vfx-slash.png",
+          "bytes": 323829,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        },
+        {
+          "file": "vfx-lightning.png",
+          "bytes": 344084,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        },
+        {
+          "file": "vfx-meteor-impact.png",
+          "bytes": 343196,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        }
+      ],
+      "consoleErrors": [],
+      "consoleWarnings": [],
+      "pageErrors": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "name": "craft-desktop",
+      "scene": "CraftLab",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "before": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 1280,
+          "height": 720,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": null,
+          "playerY": null,
+          "dummyHp": null,
+          "dummyMaxHp": null,
+          "combo": null,
+          "monsterCount": null,
+          "selectedIndex": 0,
+          "logs": [
+            "[11:51:54 PM] authority mock active · no backend yet",
+            "[11:51:54 PM] lab ready · inventory loaded"
+          ],
+          "inventoryOpen": null,
+          "hp": null,
+          "level": null,
+          "artVisible": null,
+          "targetVisible": null,
+          "keyBindingsReady": true
+        }
+      },
+      "after": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 1280,
+          "height": 720,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": null,
+          "playerY": null,
+          "dummyHp": null,
+          "dummyMaxHp": null,
+          "combo": null,
+          "monsterCount": null,
+          "selectedIndex": 0,
+          "logs": [
+            "[11:52:05 PM] accept → salvage yield applied",
+            "[11:52:05 PM] request salvage:iron_blade",
+            "[11:52:00 PM] accept → inventory transaction committed",
+            "[11:52:00 PM] request craft:iron_blade",
+            "[11:52:00 PM] dev grant → resource fixture replenished",
+            "[11:51:54 PM] authority mock active · no backend yet",
+            "[11:51:54 PM] lab ready · inventory loaded"
+          ],
+          "inventoryOpen": null,
+          "hp": null,
+          "level": null,
+          "artVisible": null,
+          "targetVisible": null,
+          "keyBindingsReady": true
+        }
+      },
+      "captures": [
+        {
+          "file": "craft-initial.png",
+          "bytes": 199929,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        },
+        {
+          "file": "craft-success.png",
+          "bytes": 220476,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        },
+        {
+          "file": "craft-salvage.png",
+          "bytes": 195371,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        }
+      ],
+      "consoleErrors": [],
+      "consoleWarnings": [],
+      "pageErrors": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "name": "ui-desktop",
+      "scene": "UiLab",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "before": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 1280,
+          "height": 720,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": null,
+          "playerY": null,
+          "dummyHp": null,
+          "dummyMaxHp": null,
+          "combo": null,
+          "monsterCount": null,
+          "selectedIndex": null,
+          "logs": null,
+          "inventoryOpen": false,
+          "hp": 84,
+          "level": 10,
+          "artVisible": true,
+          "targetVisible": true,
+          "keyBindingsReady": true
+        }
+      },
+      "after": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 1280,
+          "height": 720,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": null,
+          "playerY": null,
+          "dummyHp": null,
+          "dummyMaxHp": null,
+          "combo": null,
+          "monsterCount": null,
+          "selectedIndex": null,
+          "logs": null,
+          "inventoryOpen": true,
+          "hp": 28,
+          "level": 11,
+          "artVisible": true,
+          "targetVisible": true,
+          "keyBindingsReady": true
+        }
+      },
+      "captures": [
+        {
+          "file": "ui-initial.png",
+          "bytes": 298900,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        },
+        {
+          "file": "ui-inventory.png",
+          "bytes": 149490,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        },
+        {
+          "file": "ui-low-hp-level-up.png",
+          "bytes": 331410,
+          "width": 1280,
+          "height": 720,
+          "pureBlackRatio": 0
+        }
+      ],
+      "consoleErrors": [],
+      "consoleWarnings": [],
+      "pageErrors": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "name": "hub-mobile",
+      "scene": "LabHub",
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "before": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 430,
+          "height": 241.875,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": null,
+          "playerY": null,
+          "dummyHp": null,
+          "dummyMaxHp": null,
+          "combo": null,
+          "monsterCount": null,
+          "selectedIndex": 1,
+          "logs": null,
+          "inventoryOpen": null,
+          "hp": null,
+          "level": null,
+          "artVisible": true,
+          "targetVisible": null,
+          "keyBindingsReady": true
+        }
+      },
+      "after": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 430,
+          "height": 241.875,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": null,
+          "playerY": null,
+          "dummyHp": null,
+          "dummyMaxHp": null,
+          "combo": null,
+          "monsterCount": null,
+          "selectedIndex": 1,
+          "logs": null,
+          "inventoryOpen": null,
+          "hp": null,
+          "level": null,
+          "artVisible": true,
+          "targetVisible": null,
+          "keyBindingsReady": true
+        }
+      },
+      "captures": [
+        {
+          "file": "hub-mobile.png",
+          "bytes": 84119,
+          "width": 430,
+          "height": 243,
+          "pureBlackRatio": 0
+        }
+      ],
+      "consoleErrors": [],
+      "consoleWarnings": [],
+      "pageErrors": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "failures": [
+        "hub-mobile.png is suspiciously small (84119 bytes)"
+      ],
+      "passed": false
+    },
+    {
+      "name": "combat-mobile",
+      "scene": "CombatLab",
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "before": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 430,
+          "height": 241.875,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": 310,
+          "playerY": 609.5,
+          "dummyHp": 240,
+          "dummyMaxHp": 240,
+          "combo": 0,
+          "monsterCount": null,
+          "selectedIndex": null,
+          "logs": null,
+          "inventoryOpen": null,
+          "hp": null,
+          "level": null,
+          "artVisible": true,
+          "targetVisible": true,
+          "keyBindingsReady": true
+        }
+      },
+      "after": {
+        "active": true,
+        "bootHidden": true,
+        "atlasExists": true,
+        "missingFrames": [],
+        "canvas": {
+          "width": 430,
+          "height": 241.875,
+          "aspect": 1.7777777777777777
+        },
+        "state": {
+          "devOverlayVisible": false,
+          "playerX": 310,
+          "playerY": 609.5,
+          "dummyHp": 240,
+          "dummyMaxHp": 240,
+          "combo": 0,
+          "monsterCount": null,
+          "selectedIndex": null,
+          "logs": null,
+          "inventoryOpen": null,
+          "hp": null,
+          "level": null,
+          "artVisible": true,
+          "targetVisible": true,
+          "keyBindingsReady": true
+        }
+      },
+      "captures": [
+        {
+          "file": "combat-mobile.png",
+          "bytes": 69982,
+          "width": 430,
+          "height": 243,
+          "pureBlackRatio": 0
+        }
+      ],
+      "consoleErrors": [],
+      "consoleWarnings": [],
+      "pageErrors": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "failures": [
+        "combat-mobile.png is suspiciously small (69982 bytes)"
+      ],
+      "passed": false
+    }
+  ],
+  "failures": [
+    "movement-desktop: controller did not run and jump through the first platform",
+    "combat-desktop: keyboard attacks did not damage the target",
+    "combat-desktop: combo state never advanced during an impact window",
+    "hub-mobile: hub-mobile.png is suspiciously small (84119 bytes)",
+    "combat-mobile: combat-mobile.png is suspiciously small (69982 bytes)"
+  ],
+  "passed": false
+}
