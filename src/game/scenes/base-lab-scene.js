@@ -28,43 +28,51 @@ export class BaseLabScene extends Phaser.Scene {
 
   createBackdrop(accent) {
     const { width, height } = this.scale;
-    const addLayer = (key, depth, factor, displayWidth = width * 1.12, displayHeight = height) => {
+    const addLayer = (key, depth, factor, displayWidth = width * 1.12, displayHeight = height, alpha = 1) => {
       if (!this.textures.exists(key)) return null;
       const layer = this.add.image(width / 2, height / 2, key)
-        .setDisplaySize(displayWidth, displayHeight).setScrollFactor(0).setDepth(depth);
+        .setDisplaySize(displayWidth, displayHeight).setScrollFactor(0).setDepth(depth).setAlpha(alpha);
       this.parallaxLayers.push({ layer, factor, baseX: width / 2 });
       return layer;
     };
 
-    addLayer('bg-sky', -120, 0.015, width * 1.16, height);
-    addLayer('bg-far', -112, 0.035, width * 1.18, height);
-    addLayer('bg-mid', -104, 0.065, width * 1.2, height);
+    addLayer('bg-sky', -120, 0.012, width * 1.16, height);
+    addLayer('bg-far', -114, 0.028, width * 1.18, height, 0.82);
+    addLayer('bg-mid', -106, 0.055, width * 1.2, height, 0.9);
 
-    if (atlasHas(this, 'floating_castle')) {
-      const castle = addAtlasArt(this, width * 0.82, height * 0.49, 'floating_castle', { height: 270, alpha: 0.28, originY: 0.5 });
-      castle?.setDepth(-102).setScrollFactor(0);
-      if (castle) this.parallaxLayers.push({ layer: castle, factor: 0.05, baseX: width * 0.82 });
+    const distant = this.add.graphics().setScrollFactor(0).setDepth(-109);
+    distant.fillStyle(0x171d35, 0.28).fillEllipse(width * 0.26, height * 0.57, width * 0.55, 98);
+    distant.fillStyle(0x4c4d78, 0.16).fillEllipse(width * 0.72, height * 0.52, width * 0.48, 78);
+
+    if (atlasHas(this, 'portal_arch')) {
+      addAtlasArt(this, width * 0.79, height - 108, 'portal_arch', { height: 265, alpha: 0.15 })
+        ?.setDepth(-103).setScrollFactor(0).setTint(0x9ca6c8);
+    }
+    if (atlasHas(this, 'ruin_pillar')) {
+      addAtlasArt(this, 72, height - 76, 'ruin_pillar', { height: 226, alpha: 0.42 })
+        ?.setDepth(-4).setTint(0xbcc7ca);
+    }
+    if (atlasHas(this, 'arcane_lantern')) {
+      const leftLantern = addAtlasArt(this, 170, height - 71, 'arcane_lantern', { height: 132, alpha: 0.68 });
+      leftLantern?.setDepth(-2);
+      if (leftLantern) this.tweens.add({ targets: leftLantern, alpha: { from: 0.55, to: 0.8 }, duration: 1700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    }
+    if (atlasHas(this, 'foliage_cluster')) {
+      addAtlasArt(this, 35, height - 38, 'foliage_cluster', { width: 230, alpha: 0.84 })?.setDepth(2);
+      addAtlasArt(this, width - 48, height - 34, 'foliage_cluster', { width: 270, alpha: 0.92, flipX: true })?.setDepth(2);
     }
 
-    const haze = this.add.graphics().setScrollFactor(0).setDepth(-98);
-    haze.fillStyle(accent, 0.035).fillEllipse(width * 0.28, height - 155, width * 0.55, 120);
-    haze.fillStyle(0xffd9ad, 0.035).fillEllipse(width * 0.78, height - 180, width * 0.5, 110);
+    const haze = this.add.graphics().setScrollFactor(0).setDepth(-96);
+    haze.fillStyle(accent, 0.045).fillEllipse(width * 0.28, height - 158, width * 0.62, 118);
+    haze.fillStyle(0xffd9ad, 0.028).fillEllipse(width * 0.78, height - 184, width * 0.48, 102);
+    haze.fillStyle(0x11162b, 0.18).fillRect(0, 0, width, 54);
 
-    if (this.textures.exists('bg-front')) {
-      const front = this.add.image(width / 2, height - 70, 'bg-front')
-        .setDisplaySize(width * 1.12, 165).setScrollFactor(0).setDepth(2).setAlpha(0.93);
-      this.parallaxLayers.push({ layer: front, factor: 0.1, baseX: width / 2 });
-    }
-
-    if (atlasHas(this, 'ruin_pillar')) addAtlasArt(this, 78, height - 80, 'ruin_pillar', { height: 240, alpha: 0.46 })?.setDepth(1);
-    if (atlasHas(this, 'foliage_cluster')) addAtlasArt(this, width - 130, height - 65, 'foliage_cluster', { height: 150, alpha: 0.72 })?.setDepth(3);
-
-    for (let i = 0; i < 18; i += 1) {
-      const mote = this.add.image((i * 149 + 31) % width, 90 + ((i * 89) % Math.max(1, height - 230)), i % 5 === 0 ? 'fx-spark' : 'fx-dot')
-        .setTint(i % 3 === 0 ? accent : 0xffdfac).setAlpha(i % 5 === 0 ? 0.11 : 0.075)
-        .setScale(i % 5 === 0 ? 0.22 : 0.16).setScrollFactor(0).setDepth(-91);
+    for (let i = 0; i < 20; i += 1) {
+      const mote = this.add.image((i * 149 + 31) % width, 86 + ((i * 89) % Math.max(1, height - 220)), i % 5 === 0 ? 'fx-spark' : 'fx-dot')
+        .setTint(i % 3 === 0 ? accent : 0xffdfac).setAlpha(i % 5 === 0 ? 0.1 : 0.065)
+        .setScale(i % 5 === 0 ? 0.2 : 0.14).setScrollFactor(0).setDepth(-91);
       this.tweens.add({ targets: mote, y: mote.y - 20 - (i % 4) * 6, x: mote.x + ((i % 2) ? 9 : -9),
-        alpha: { from: mote.alpha, to: 0.015 }, duration: 2600 + i * 90, yoyo: true, repeat: -1,
+        alpha: { from: mote.alpha, to: 0.012 }, duration: 2600 + i * 90, yoyo: true, repeat: -1,
         delay: i * 100, ease: 'Sine.easeInOut' });
     }
   }
@@ -184,9 +192,7 @@ export class BaseLabScene extends Phaser.Scene {
       this.vfx.groundDust(x, y + 42, { color: 0xd7c6a7 });
       this.vfx.burst(x, y + 38, { color: 0xe1d2b7, count: 7, speed: 70, scale: 0.3, gravity: 25 });
       const art = this.heroArt();
-      if (art && atlasHas(this, HERO_ART.land.frame)) {
-        this.setHeroState('land', this.time.now, 95);
-      }
+      if (art && atlasHas(this, HERO_ART.land.frame)) this.setHeroState('land', this.time.now, 95);
     });
     this.events.on('player-dash', (x, y) => {
       this.setHeroState('dash', this.time.now, 150);
@@ -260,14 +266,40 @@ export class BaseLabScene extends Phaser.Scene {
   }
 
   createGround(y, { x = 0, width = this.scale.width, thickness = 50 } = {}) {
-    const ground = this.add.rectangle(x + width / 2, y + thickness / 2, width, thickness, 0x172033).setDepth(4);
+    const ground = this.add.rectangle(x + width / 2, y + thickness / 2, width, thickness, 0x11182a, 0.94).setDepth(4);
     this.physics.add.existing(ground, true);
-    this.add.rectangle(x + width / 2, y + 5, width, 10, 0x568866).setDepth(5);
-    this.add.rectangle(x + width / 2, y + 1, width, 3, 0xb2df96).setDepth(6);
+
+    if (atlasHas(this, 'platform_arcane')) {
+      const segmentWidth = Math.min(430, Math.max(260, width / Math.ceil(width / 390)));
+      const count = Math.ceil(width / segmentWidth) + 1;
+      for (let index = 0; index < count; index += 1) {
+        const px = x + index * segmentWidth + segmentWidth / 2;
+        const art = addAtlasArt(this, px, y + 28, 'platform_arcane', {
+          width: segmentWidth + 86,
+          originY: 0.2,
+          alpha: index % 2 ? 0.92 : 0.98,
+          flipX: index % 2 === 1,
+        });
+        art?.setDepth(5).setTint(index % 2 ? 0xb8c9d0 : 0xffffff);
+      }
+    } else {
+      this.add.rectangle(x + width / 2, y + 5, width, 10, 0x568866).setDepth(5);
+      this.add.rectangle(x + width / 2, y + 1, width, 3, 0xb2df96).setDepth(6);
+    }
+
+    const edge = this.add.graphics().setDepth(7);
+    edge.fillStyle(0xb6e39a, 0.82).fillRect(x, y, width, 3);
+    edge.fillStyle(0x477b62, 0.55).fillRect(x, y + 3, width, 5);
     return ground;
   }
 
   createPlatform(x, y, width = 128) {
+    if (atlasHas(this, 'platform_arcane')) {
+      const platform = this.add.rectangle(x, y + 2, width, 18, 0x1a2638, 0.001).setDepth(8);
+      this.physics.add.existing(platform, true);
+      addAtlasArt(this, x, y + 15, 'platform_arcane', { width: width + 52, originY: 0.2 })?.setDepth(7);
+      return platform;
+    }
     const platform = this.physics.add.staticImage(x, y, 'platform').setDepth(8);
     platform.setScale(width / 128, 1).refreshBody();
     return platform;
