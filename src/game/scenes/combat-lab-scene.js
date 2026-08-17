@@ -7,8 +7,8 @@ export class CombatLabScene extends BaseLabScene {
   constructor() { super('CombatLab'); }
 
   create() {
-    this.createLabChrome('Combat Lab', 'Reference target: Elsword impact density + Soul’s Remnant / MapleStory readability.', THEME.amber);
-    this.physics.world.setBounds(0, 54, this.scale.width, this.scale.height - 54);
+    this.createLabChrome('Combat Lab', 'Elsword impact density · 2D MMO readability', THEME.amber);
+    this.physics.world.setBounds(0, 40, this.scale.width, this.scale.height - 40);
     this.ground = this.createGround(650);
 
     this.player = this.createPlayer(310, 590);
@@ -31,7 +31,7 @@ export class CombatLabScene extends BaseLabScene {
     this.createDevTelemetry();
     this.createCombatPrompts();
 
-    this.comboText = this.add.text(this.scale.width - 118, 190, '', {
+    this.comboText = this.add.text(this.scale.width - 118, 180, '', {
       fontFamily: 'Trebuchet MS', fontSize: '42px', fontStyle: '700', color: '#fff2cc', stroke: '#3b1830', strokeThickness: 8,
     }).setOrigin(0.5).setScrollFactor(0).setDepth(this.uiDepth + 8).setAlpha(0).setAngle(-4);
 
@@ -42,44 +42,44 @@ export class CombatLabScene extends BaseLabScene {
   }
 
   createCombatPrompts() {
-    const y = this.scale.height - 104;
-    this.add.text(this.scale.width / 2, y, 'J  QUICK SLASH      K  BREAKER      L  ARC SURGE', {
-      fontFamily: 'Trebuchet MS', fontSize: '11px', fontStyle: '700', color: '#fff0d5', stroke: '#151323', strokeThickness: 4,
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(this.uiDepth + 6);
+    const prompt = this.add.text(this.scale.width / 2, this.scale.height - 113, 'J QUICK   K BREAKER   L ARC SURGE', {
+      fontFamily: 'Trebuchet MS', fontSize: '10px', fontStyle: '700', color: '#fff0d5', stroke: '#151323', strokeThickness: 4,
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(this.uiDepth + 6).setAlpha(0.82);
+    this.tweens.add({ targets: prompt, alpha: 0, duration: 650, delay: 3600 });
   }
 
   createPlayerHud() {
     const { height } = this.scale;
-    const x = 24;
+    const x = 22;
     const y = height - 90;
     const frame = this.add.graphics().setScrollFactor(0).setDepth(this.uiDepth + 4);
-    frame.fillStyle(0x17162a, 0.94).fillRect(x + 42, y + 6, 282, 64);
-    frame.lineStyle(2, 0x716889, 0.9).strokeRect(x + 42, y + 6, 282, 64);
-    frame.fillStyle(0x28233f, 1).fillCircle(x + 42, y + 38, 38);
+    frame.fillStyle(0x121326, 0.92).fillRoundedRect(x + 39, y + 5, 286, 66, 8);
+    frame.lineStyle(2, 0x716889, 0.88).strokeRoundedRect(x + 39, y + 5, 286, 66, 8);
+    frame.fillStyle(0x28233f, 0.96).fillCircle(x + 42, y + 38, 38);
     frame.lineStyle(4, 0xc5a8ff, 0.85).strokeCircle(x + 42, y + 38, 35);
-    frame.fillStyle(0x4b3b86, 1).fillTriangle(x + 24, y + 48, x + 60, y + 48, x + 42, y + 12);
-    frame.fillStyle(0x111426, 1).fillRoundedRect(x + 31, y + 31, 22, 25, 7);
 
-    frame.fillStyle(0x351a2a, 1).fillRect(x + 82, y + 18, 224, 13);
-    frame.fillStyle(0xd84e62, 1).fillRect(x + 84, y + 20, 220, 9);
-    frame.fillStyle(0x192842, 1).fillRect(x + 82, y + 39, 190, 9);
-    frame.fillStyle(0x4aaee6, 1).fillRect(x + 84, y + 41, 186, 5);
-    frame.fillStyle(0x493f28, 1).fillRect(x + 82, y + 55, 150, 6);
-    frame.fillStyle(0xe5c862, 1).fillRect(x + 84, y + 57, 110, 2);
+    frame.fillStyle(0x351a2a, 1).fillRoundedRect(x + 84, y + 18, 221, 13, 4);
+    frame.fillStyle(0xd84e62, 1).fillRoundedRect(x + 86, y + 20, 217, 9, 3);
+    frame.fillStyle(0x192842, 1).fillRoundedRect(x + 84, y + 39, 188, 9, 3);
+    frame.fillStyle(0x4aaee6, 1).fillRoundedRect(x + 86, y + 41, 184, 5, 2);
+    frame.fillStyle(0x493f28, 1).fillRoundedRect(x + 84, y + 55, 150, 6, 3);
+    frame.fillStyle(0xe5c862, 1).fillRoundedRect(x + 86, y + 57, 110, 2, 1);
 
-    this.add.text(x + 82, y + 1, 'LAB ADVENTURER   Lv. 12', { fontFamily: 'Trebuchet MS', fontSize: '11px', fontStyle: '700', color: '#fff3dc' })
+    this.add.image(x + 42, y + 39, 'player').setDisplaySize(51, 59).setScrollFactor(0).setDepth(this.uiDepth + 5);
+    this.add.text(x + 84, y + 1, 'LAB ADVENTURER   Lv. 12', { fontFamily: 'Trebuchet MS', fontSize: '11px', fontStyle: '700', color: '#fff3dc' })
       .setScrollFactor(0).setDepth(this.uiDepth + 5);
-    this.add.text(x + 288, y + 17, '240 / 240', { fontFamily: 'monospace', fontSize: '8px', color: '#fff4f0' }).setOrigin(1, 0).setScrollFactor(0).setDepth(this.uiDepth + 5);
+    this.add.text(x + 289, y + 17, '240 / 240', { fontFamily: 'monospace', fontSize: '8px', color: '#fff4f0' })
+      .setOrigin(1, 0).setScrollFactor(0).setDepth(this.uiDepth + 5);
   }
 
   createSkillSlot(x, y, texture, keyLabel, accent) {
     const c = this.add.container(x, y).setScrollFactor(0).setDepth(this.uiDepth + 5);
     const frame = this.add.graphics();
-    frame.fillStyle(0x171426, 0.97).fillRect(-32, -32, 64, 64);
-    frame.lineStyle(3, 0x75698c, 0.9).strokeRect(-32, -32, 64, 64);
-    frame.lineStyle(1, accent, 0.9).strokeRect(-27, -27, 54, 54);
-    const icon = this.add.image(0, 0, texture).setDisplaySize(50, 50);
-    const key = this.add.text(-27, -27, keyLabel, { fontFamily: 'Trebuchet MS', fontSize: '10px', fontStyle: '700', color: '#fff6df', stroke: '#151323', strokeThickness: 4 });
+    frame.fillStyle(0x101222, 0.95).fillRoundedRect(-34, -34, 68, 68, 8);
+    frame.lineStyle(3, 0x6f678a, 0.88).strokeRoundedRect(-34, -34, 68, 68, 8);
+    frame.lineStyle(1, accent, 0.9).strokeRoundedRect(-29, -29, 58, 58, 6);
+    const icon = this.add.image(0, 0, texture).setDisplaySize(54, 54);
+    const key = this.add.text(-28, -28, keyLabel, { fontFamily: 'Trebuchet MS', fontSize: '10px', fontStyle: '700', color: '#fff6df', stroke: '#151323', strokeThickness: 4 });
     const veil = this.add.graphics();
     c.add([frame, icon, veil, key]);
     return { c, veil, accent };
@@ -88,18 +88,18 @@ export class CombatLabScene extends BaseLabScene {
   createSkillHud() {
     if (this.skillSlots) return;
     const { width, height } = this.scale;
-    const y = height - 54;
+    const y = height - 52;
     this.skillSlots = {
-      light: this.createSkillSlot(width / 2 - 76, y, 'skill-light', 'J', ATTACKS.light.accent),
+      light: this.createSkillSlot(width / 2 - 78, y, 'skill-light', 'J', ATTACKS.light.accent),
       heavy: this.createSkillSlot(width / 2, y, 'skill-heavy', 'K', ATTACKS.heavy.accent),
-      skill: this.createSkillSlot(width / 2 + 76, y, 'skill-arc', 'L', ATTACKS.skill.accent),
+      skill: this.createSkillSlot(width / 2 + 78, y, 'skill-arc', 'L', ATTACKS.skill.accent),
     };
   }
 
   createTargetHud() {
     const { width } = this.scale;
     this.targetFrame = this.add.graphics().setScrollFactor(0).setDepth(this.uiDepth + 4);
-    this.targetLabel = this.add.text(width / 2, 78, 'TRAINING BRUTE  ·  Lv. 12', { fontFamily: 'Trebuchet MS', fontSize: '11px', fontStyle: '700', color: '#fff1dc' })
+    this.targetLabel = this.add.text(width / 2, 67, 'TRAINING BRUTE  ·  Lv. 12', { fontFamily: 'Trebuchet MS', fontSize: '11px', fontStyle: '700', color: '#fff1dc', stroke: '#171323', strokeThickness: 4 })
       .setOrigin(0.5).setScrollFactor(0).setDepth(this.uiDepth + 5);
     this.createSkillHud();
     this.updateTargetHud();
@@ -108,23 +108,23 @@ export class CombatLabScene extends BaseLabScene {
   updateTargetHud() {
     if (!this.targetFrame || this.dummyHp == null || this.dummyMaxHp == null) return;
     const { width } = this.scale;
-    const x = width / 2 - 210;
-    const y = 95;
+    const x = width / 2 - 205;
+    const y = 84;
     const ratio = Math.max(0, this.dummyHp / this.dummyMaxHp);
     this.targetFrame.clear();
-    this.targetFrame.fillStyle(0x1a1628, 0.92).fillRect(x, y, 420, 20);
-    this.targetFrame.lineStyle(2, 0x776a8c, 0.9).strokeRect(x, y, 420, 20);
-    this.targetFrame.fillStyle(0x7f263e, 1).fillRect(x + 4, y + 4, 412, 12);
-    this.targetFrame.fillStyle(0xf05b63, 1).fillRect(x + 4, y + 4, 412 * ratio, 12);
-    this.targetFrame.fillStyle(0xffcb72, 0.75).fillRect(x + 4, y + 4, 412 * ratio, 2);
+    this.targetFrame.fillStyle(0x120f20, 0.86).fillRoundedRect(x, y, 410, 20, 7);
+    this.targetFrame.lineStyle(2, 0x776a8c, 0.8).strokeRoundedRect(x, y, 410, 20, 7);
+    this.targetFrame.fillStyle(0x7f263e, 1).fillRoundedRect(x + 4, y + 4, 402, 12, 4);
+    this.targetFrame.fillStyle(0xf05b63, 1).fillRoundedRect(x + 4, y + 4, 402 * ratio, 12, 4);
+    this.targetFrame.fillStyle(0xffcb72, 0.7).fillRect(x + 5, y + 4, 400 * ratio, 2);
     this.targetLabel?.setText(`TRAINING BRUTE  ·  Lv. 12        ${this.dummyHp} / ${this.dummyMaxHp}`);
   }
 
   createDevTelemetry() {
-    const c = this.add.container(18, 126).setScrollFactor(0).setDepth(this.uiDepth + 12).setVisible(false);
+    const c = this.add.container(18, 116).setScrollFactor(0).setDepth(this.uiDepth + 12).setVisible(false);
     const panel = this.add.graphics();
-    panel.fillStyle(0x11111f, 0.94).fillRect(0, 0, 300, 185);
-    panel.lineStyle(1, THEME.amber, 0.65).strokeRect(0, 0, 300, 185);
+    panel.fillStyle(0x11111f, 0.94).fillRoundedRect(0, 0, 300, 185, 8);
+    panel.lineStyle(1, THEME.amber, 0.65).strokeRoundedRect(0, 0, 300, 185, 8);
     const title = this.add.text(16, 13, 'COMBAT TELEMETRY / F2', { fontFamily: 'monospace', fontSize: '10px', color: '#ffc985' });
     this.combatDebug = this.add.text(16, 38, 'ready', { fontFamily: 'monospace', fontSize: '10px', color: '#d8d2dd', lineSpacing: 5 });
     const hints = this.add.text(16, 142, 'B hitboxes  ·  P reset target', { fontFamily: 'monospace', fontSize: '9px', color: '#a9a2b2' });
@@ -134,14 +134,13 @@ export class CombatLabScene extends BaseLabScene {
 
   spawnDummy() {
     this.dummy?.destroy();
-    this.dummy = this.physics.add.sprite(835, 581, 'brute').setDepth(20).setCollideWorldBounds(true);
-    this.dummy.body.setSize(62, 78).setOffset(11, 12);
+    this.dummy = this.physics.add.sprite(835, 577, 'brute').setDepth(20).setCollideWorldBounds(true).setScale(0.96);
+    this.dummy.body.setSize(76, 96).setOffset(20, 24);
     this.dummy.setDragX(1050);
     this.physics.add.collider(this.dummy, this.ground);
     this.dummyMaxHp = 240;
     this.dummyHp = this.dummyMaxHp;
     this.dummyArmor = 8;
-    this.dummy.setScale(1.05);
     this.updateTargetHud();
   }
 
@@ -153,14 +152,18 @@ export class CombatLabScene extends BaseLabScene {
     const facing = this.controller.facing;
     const isHeavy = attack.id === 'heavy';
     const isSkill = attack.id === 'skill';
-    const windup = isSkill ? 150 : isHeavy ? 90 : 35;
+    const windup = isSkill ? 165 : isHeavy ? 105 : 42;
 
     this.attacking = true;
     this.player.setFlipX(facing < 0);
-    this.vfx.afterImage(this.player, { color: attack.accent, alpha: isSkill ? 0.34 : 0.2, drift: facing * -22, duration: 180 });
-    if (isSkill) this.vfx.castSigil(this.player.x, this.player.y + 24, { color: attack.accent, scale: 0.78, duration: 360 });
+    this.playPlayerAction(attack.id, time, windup + (isSkill ? 300 : isHeavy ? 220 : 150));
+    this.vfx.afterImage(this.player, { color: attack.accent, alpha: isSkill ? 0.36 : 0.22, drift: facing * -24, duration: 190 });
+    if (isSkill) {
+      this.vfx.castSigil(this.player.x, this.player.y + 30, { color: attack.accent, scale: 0.82, duration: 390 });
+      this.vfx.screenFlash({ color: attack.accent, alpha: 0.035, duration: 150 });
+    }
 
-    this.tweens.add({ targets: this.player, scaleX: isHeavy ? 0.92 : 0.96, scaleY: isHeavy ? 1.10 : 1.04,
+    this.tweens.add({ targets: this.player, scaleX: isHeavy ? 0.88 : 0.93, scaleY: isHeavy ? 1.08 : 1.02,
       angle: facing * (isHeavy ? -5 : -2), duration: windup, ease: 'Sine.easeOut',
       onComplete: () => this.resolveAttackHit(attack, facing, time) });
   }
@@ -168,15 +171,19 @@ export class CombatLabScene extends BaseLabScene {
   resolveAttackHit(attack, facing, time) {
     const isHeavy = attack.id === 'heavy';
     const isSkill = attack.id === 'skill';
-    const lunge = isSkill ? 50 : isHeavy ? 34 : 22;
+    const lunge = isSkill ? 56 : isHeavy ? 38 : 24;
+    this.playPlayerAction(attack.id, this.time.now, isSkill ? 220 : isHeavy ? 165 : 115);
     this.player.x += facing * lunge;
-    this.player.setScale(1.06, 0.94).setAngle(facing * (isHeavy ? 9 : 5));
-    this.time.delayedCall(90, () => { if (this.player) this.player.setScale(1).setAngle(0); this.attacking = false; });
+    this.player.setScale(1.04, 0.93).setAngle(facing * (isHeavy ? 8 : 4));
+    this.time.delayedCall(isSkill ? 125 : 90, () => {
+      if (this.player) this.player.setScale(0.9).setAngle(0);
+      this.attacking = false;
+    });
 
-    this.vfx.slash(this.player.x, this.player.y - 6, facing, { color: attack.accent, heavy: isHeavy || isSkill });
+    this.vfx.slash(this.player.x, this.player.y - 10, facing, { color: attack.accent, heavy: isHeavy || isSkill });
     if (isSkill) {
-      this.vfx.shockwave(this.player.x + facing * 98, this.player.y - 2, { color: attack.accent, scale: 1.55, duration: 380 });
-      this.vfx.lightning(this.player.x + facing * 32, this.player.y - 38, this.player.x + facing * 196, this.player.y - 10, { color: 0xccefff });
+      this.vfx.shockwave(this.player.x + facing * 105, this.player.y - 4, { color: attack.accent, scale: 1.65, duration: 390 });
+      this.vfx.lightning(this.player.x + facing * 32, this.player.y - 44, this.player.x + facing * 205, this.player.y - 12, { color: 0xccefff });
     }
 
     const hit = isTargetInAttackArc({ attackerX: this.player.x, targetX: this.dummy.x, facing, range: attack.range, verticalDelta: this.dummy.y - this.player.y });
@@ -185,19 +192,19 @@ export class CombatLabScene extends BaseLabScene {
     const damage = resolveDamage({ attack, attackerPower: 1, targetArmor: this.dummyArmor });
     this.dummyHp = Math.max(0, this.dummyHp - damage);
     this.dummy.setVelocityX(facing * attack.knockback).setVelocityY(isHeavy ? -120 : -55);
-    this.dummy.setTint(0xffffff).setScale(1.08, 0.92);
-    this.time.delayedCall(isSkill ? 120 : 78, () => this.dummy?.clearTint().setScale(1.05));
+    this.dummy.setTint(0xffffff).setScale(1.02, 0.86);
+    this.time.delayedCall(isSkill ? 120 : 78, () => this.dummy?.clearTint().setScale(0.96));
 
-    this.hitStop(isSkill ? 58 : isHeavy ? 43 : 28);
-    this.vfx.screenFlash({ color: attack.accent, alpha: isSkill ? 0.13 : 0.055, duration: isSkill ? 115 : 70 });
-    this.vfx.radialImpact(this.dummy.x, this.dummy.y - 12, { color: attack.accent, power: isSkill ? 1.45 : isHeavy ? 1.15 : 0.8 });
-    this.vfx.burst(this.dummy.x, this.dummy.y - 7, { color: attack.accent, count: isSkill ? 28 : isHeavy ? 19 : 12, speed: isSkill ? 290 : isHeavy ? 220 : 155, scale: isSkill ? 1 : 0.7 });
-    this.cameras.main.shake(isSkill ? 135 : isHeavy ? 100 : 55, isSkill ? 0.008 : isHeavy ? 0.005 : 0.0025);
-    this.cameraPunch(isSkill ? 1.028 : 1.012, isSkill ? 150 : 95);
+    this.hitStop(isSkill ? 62 : isHeavy ? 46 : 29);
+    this.vfx.screenFlash({ color: attack.accent, alpha: isSkill ? 0.12 : 0.05, duration: isSkill ? 115 : 70 });
+    this.vfx.radialImpact(this.dummy.x, this.dummy.y - 14, { color: attack.accent, power: isSkill ? 1.5 : isHeavy ? 1.18 : 0.82 });
+    this.vfx.burst(this.dummy.x, this.dummy.y - 8, { color: attack.accent, count: isSkill ? 30 : isHeavy ? 20 : 12, speed: isSkill ? 300 : isHeavy ? 225 : 155, scale: isSkill ? 1 : 0.7 });
+    this.cameras.main.shake(isSkill ? 140 : isHeavy ? 102 : 55, isSkill ? 0.008 : isHeavy ? 0.005 : 0.0025);
+    this.cameraPunch(isSkill ? 1.032 : 1.014, isSkill ? 155 : 95);
 
     this.combo = nextCombo(this.combo, time - this.lastHitAt);
     this.lastHitAt = time;
-    this.showDamageNumber(this.dummy.x, this.dummy.y - 65, damage, attack.accent, isSkill || isHeavy);
+    this.showDamageNumber(this.dummy.x, this.dummy.y - 70, damage, attack.accent, isSkill || isHeavy);
     this.showCombo();
     this.updateTargetHud();
 
@@ -223,9 +230,9 @@ export class CombatLabScene extends BaseLabScene {
 
   showCombo() {
     this.tweens.killTweensOf(this.comboText);
-    this.comboText.setText(`${this.combo}\nHIT${this.combo === 1 ? '' : 'S'}`).setAlpha(1).setScale(1.3).setY(190);
+    this.comboText.setText(`${this.combo}\nHIT${this.combo === 1 ? '' : 'S'}`).setAlpha(1).setScale(1.3).setY(180);
     this.tweens.add({ targets: this.comboText, scale: 1, duration: 110, ease: 'Back.easeOut' });
-    this.tweens.add({ targets: this.comboText, alpha: 0, y: 178, duration: 260, delay: 720, ease: 'Quad.easeIn' });
+    this.tweens.add({ targets: this.comboText, alpha: 0, y: 168, duration: 260, delay: 720, ease: 'Quad.easeIn' });
   }
 
   showDamageNumber(x, y, damage, color, strong = false) {
@@ -241,7 +248,7 @@ export class CombatLabScene extends BaseLabScene {
     const remaining = Math.max(0, (this.cooldowns.get(attack.id) ?? 0) - time);
     const ratio = remaining / attack.cooldownMs;
     slot.veil.clear();
-    if (ratio > 0) slot.veil.fillStyle(0x090912, 0.72).fillRect(-25, -25, 50, 50 * ratio);
+    if (ratio > 0) slot.veil.fillStyle(0x090912, 0.72).fillRect(-27, -27, 54, 54 * ratio);
     return remaining;
   }
 

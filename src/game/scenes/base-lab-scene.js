@@ -9,12 +9,13 @@ export class BaseLabScene extends Phaser.Scene {
     this.debugVisible = false;
     this.helpVisible = false;
     this.uiDepth = 500;
+    this.parallaxLayers = [];
   }
 
   createLabChrome(title, subtitle, accent = THEME.violet) {
     this.accent = accent;
     this.vfx = new VfxDirector(this);
-    this.cameras.main.setBackgroundColor(THEME.bg);
+    this.cameras.main.setBackgroundColor(0x161b3c);
     this.createBackdrop(accent);
     this.createTopBar(title, subtitle, accent);
     this.createGlobalHelp();
@@ -26,60 +27,58 @@ export class BaseLabScene extends Phaser.Scene {
 
   createBackdrop(accent) {
     const { width, height } = this.scale;
-    const g = this.add.graphics().setScrollFactor(0).setDepth(-100);
-    const bands = [0x20294b, 0x2d3560, 0x414271, 0x5a4b7a, 0x76597d];
-    const playTop = 54;
-    const bandH = (height - playTop) / bands.length;
-    bands.forEach((color, i) => g.fillStyle(color, 1).fillRect(0, playTop + i * bandH, width, bandH + 1));
-    g.fillStyle(0xffd49a, 0.72).fillCircle(width * 0.78, 145, 42);
-    g.fillStyle(0xffecbf, 0.18).fillCircle(width * 0.78, 145, 66);
+    const addLayer = (key, depth, factor, displayWidth = width * 1.12, displayHeight = height) => {
+      if (!this.textures.exists(key)) return null;
+      const layer = this.add.image(width / 2, height / 2, key)
+        .setDisplaySize(displayWidth, displayHeight)
+        .setScrollFactor(0)
+        .setDepth(depth);
+      this.parallaxLayers.push({ layer, factor, baseX: width / 2 });
+      return layer;
+    };
 
-    const far = this.add.graphics().setScrollFactor(0).setDepth(-95);
-    far.fillStyle(0x343452, 0.72).fillTriangle(-100, height - 128, width * 0.28, 180, width * 0.56, height - 128)
-      .fillTriangle(width * 0.25, height - 128, width * 0.58, 225, width * 0.91, height - 128)
-      .fillTriangle(width * 0.58, height - 128, width * 0.86, 200, width + 120, height - 128);
-    far.fillStyle(0x20263b, 0.82);
-    for (let x = -20; x < width + 60; x += 72) {
-      const h = 72 + ((x * 17) % 54);
-      far.fillTriangle(x, height - 102, x + 34, height - 102 - h, x + 68, height - 102);
+    addLayer('bg-sky', -120, 0.015, width * 1.16, height);
+    addLayer('bg-far', -112, 0.035, width * 1.18, height);
+    addLayer('bg-mid', -104, 0.065, width * 1.2, height);
+
+    const haze = this.add.graphics().setScrollFactor(0).setDepth(-98);
+    haze.fillStyle(accent, 0.035).fillEllipse(width * 0.28, height - 155, width * 0.55, 120);
+    haze.fillStyle(0xffd9ad, 0.035).fillEllipse(width * 0.78, height - 180, width * 0.5, 110);
+
+    if (this.textures.exists('bg-front')) {
+      const front = this.add.image(width / 2, height - 70, 'bg-front')
+        .setDisplaySize(width * 1.12, 165).setScrollFactor(0).setDepth(2).setAlpha(0.93);
+      this.parallaxLayers.push({ layer: front, factor: 0.1, baseX: width / 2 });
     }
 
-    const ruins = this.add.graphics().setScrollFactor(0).setDepth(-91);
-    ruins.fillStyle(0x27243b, 0.72).fillRect(66, height - 240, 28, 138).fillRect(100, height - 196, 22, 94);
-    ruins.fillStyle(0x27243b, 0.72).fillRect(width - 132, height - 218, 26, 116).fillRect(width - 100, height - 250, 30, 148);
-    ruins.lineStyle(5, 0x3d3552, 0.65).strokeCircle(94, height - 198, 52).strokeCircle(width - 101, height - 222, 48);
-
-    const mist = this.add.graphics().setScrollFactor(0).setDepth(-88);
-    mist.fillStyle(accent, 0.045).fillEllipse(width * 0.32, height - 125, width * 0.7, 120)
-      .fillEllipse(width * 0.78, height - 105, width * 0.55, 92);
-
-    for (let i = 0; i < 24; i += 1) {
-      const mote = this.add.image((i * 137 + 57) % width, 100 + ((i * 83) % Math.max(1, height - 220)), 'fx-dot')
-        .setTint(i % 3 === 0 ? accent : 0xffe9b0).setAlpha(i % 3 === 0 ? 0.18 : 0.10)
-        .setScale(i % 4 === 0 ? 0.45 : 0.25).setScrollFactor(0).setDepth(-84);
-      this.tweens.add({ targets: mote, y: mote.y - 18 - (i % 4) * 5, alpha: { from: mote.alpha, to: 0.02 }, duration: 2200 + i * 75,
-        yoyo: true, repeat: -1, delay: i * 90, ease: 'Sine.easeInOut' });
+    for (let i = 0; i < 18; i += 1) {
+      const mote = this.add.image((i * 149 + 31) % width, 90 + ((i * 89) % Math.max(1, height - 230)), i % 5 === 0 ? 'fx-spark' : 'fx-dot')
+        .setTint(i % 3 === 0 ? accent : 0xffdfac)
+        .setAlpha(i % 5 === 0 ? 0.11 : 0.075)
+        .setScale(i % 5 === 0 ? 0.22 : 0.16)
+        .setScrollFactor(0).setDepth(-91);
+      this.tweens.add({ targets: mote, y: mote.y - 20 - (i % 4) * 6, x: mote.x + ((i % 2) ? 9 : -9),
+        alpha: { from: mote.alpha, to: 0.015 }, duration: 2600 + i * 90, yoyo: true, repeat: -1,
+        delay: i * 100, ease: 'Sine.easeInOut' });
     }
   }
 
   createTopBar(title, subtitle, accent) {
     const { width } = this.scale;
-    const bar = this.add.graphics().setScrollFactor(0).setDepth(this.uiDepth);
-    bar.fillStyle(0x111326, 0.78).fillRect(0, 0, width, 54);
-    bar.fillStyle(0x080914, 0.26).fillRect(0, 45, width, 9);
-    bar.lineStyle(1, 0xded1ff, 0.16).lineBetween(0, 53, width, 53);
-    bar.fillStyle(accent, 0.95).fillTriangle(16, 54, 104, 54, 16, 49);
+    const tag = this.add.container(14, 13).setScrollFactor(0).setDepth(this.uiDepth);
+    const bg = this.add.graphics();
+    bg.fillStyle(0x0a0b18, 0.74).fillRoundedRect(0, 0, 235, 40, 7);
+    bg.lineStyle(1, 0xffffff, 0.11).strokeRoundedRect(0, 0, 235, 40, 7);
+    bg.fillStyle(accent, 0.95).fillRect(0, 0, 4, 40);
+    const name = this.add.text(14, 6, title.toUpperCase(), { fontFamily: 'Trebuchet MS, system-ui', fontSize: '13px', fontStyle: '700', color: '#fff4df' });
+    const sub = this.add.text(14, 23, subtitle, { fontFamily: 'Trebuchet MS, system-ui', fontSize: '8px', color: '#c6c2d5' }).setCrop(0, 0, 205, 12);
+    tag.add([bg, name, sub]);
 
-    this.add.text(20, 11, title.toUpperCase(), { fontFamily: 'Trebuchet MS, system-ui', fontSize: '16px', fontStyle: '700', color: '#fff7e8' })
-      .setScrollFactor(0).setDepth(this.uiDepth + 1);
-    this.add.text(20, 32, subtitle, { fontFamily: 'Trebuchet MS, system-ui', fontSize: '10px', color: '#d0c8dc' })
-      .setScrollFactor(0).setDepth(this.uiDepth + 1);
-    this.add.text(width - 18, 13, 'DEV LAB  ·  F2 DEBUG  ·  H HELP  ·  ESC LABS', {
-      fontFamily: 'Trebuchet MS, system-ui', fontSize: '10px', color: '#e2d8f0', align: 'right',
-    }).setOrigin(1, 0).setScrollFactor(0).setDepth(this.uiDepth + 1);
-    this.add.text(width - 18, 31, '1  MOVEMENT   2  COMBAT   3  MOBS   4  VFX   5  CRAFT   6  UI', {
-      fontFamily: 'monospace', fontSize: '8px', color: Phaser.Display.Color.IntegerToColor(accent).rgba,
-    }).setOrigin(1, 0).setScrollFactor(0).setDepth(this.uiDepth + 1);
+    const shortcuts = this.add.text(width - 14, 17, 'F2 DEBUG   H HELP   ESC LABS', {
+      fontFamily: 'Trebuchet MS, system-ui', fontSize: '9px', fontStyle: '700', color: '#efe8f2',
+      stroke: '#111323', strokeThickness: 3,
+    }).setOrigin(1, 0).setScrollFactor(0).setDepth(this.uiDepth);
+    shortcuts.setAlpha(0.78);
   }
 
   createGlobalKeys() {
@@ -94,18 +93,63 @@ export class BaseLabScene extends Phaser.Scene {
     });
   }
 
-  commonUpdate() {
-    if (!this.globalKeys) return;
-    if (Phaser.Input.Keyboard.JustDown(this.globalKeys.escape)) this.scene.start('LabHub');
-    if (Phaser.Input.Keyboard.JustDown(this.globalKeys.reset)) this.scene.restart();
-    if (Phaser.Input.Keyboard.JustDown(this.globalKeys.help)) this.toggleHelp();
-    if (Phaser.Input.Keyboard.JustDown(this.globalKeys.debug)) this.toggleDeveloperOverlay();
-    for (let i = 1; i <= LABS.length; i += 1) {
-      if (Phaser.Input.Keyboard.JustDown(this.globalKeys[`lab${i}`])) {
-        const lab = LABS[i - 1];
-        if (lab.key !== this.sys.settings.key) this.scene.start(lab.key);
+  commonUpdate(time) {
+    if (this.globalKeys) {
+      if (Phaser.Input.Keyboard.JustDown(this.globalKeys.escape)) this.scene.start('LabHub');
+      if (Phaser.Input.Keyboard.JustDown(this.globalKeys.reset)) this.scene.restart();
+      if (Phaser.Input.Keyboard.JustDown(this.globalKeys.help)) this.toggleHelp();
+      if (Phaser.Input.Keyboard.JustDown(this.globalKeys.debug)) this.toggleDeveloperOverlay();
+      for (let i = 1; i <= LABS.length; i += 1) {
+        if (Phaser.Input.Keyboard.JustDown(this.globalKeys[`lab${i}`])) {
+          const lab = LABS[i - 1];
+          if (lab.key !== this.sys.settings.key) this.scene.start(lab.key);
+        }
       }
     }
+
+    this.updatePlayerPresentation(time ?? 0);
+    this.updateParallax();
+  }
+
+  updateParallax() {
+    if (!this.parallaxLayers.length) return;
+    const width = this.scale.width;
+    const focusX = this.player?.x ?? width / 2;
+    const offset = focusX - width / 2;
+    for (const { layer, factor, baseX } of this.parallaxLayers) {
+      if (layer?.active) layer.x = baseX - offset * factor;
+    }
+  }
+
+  playPlayerAction(action, time, duration = 180) {
+    if (!this.player) return;
+    const map = { light: 'player-light', heavy: 'player-heavy', skill: 'player-skill' };
+    const key = map[action] ?? 'player-light';
+    if (this.textures.exists(key)) this.player.setTexture(key);
+    this.player.setData('visualAction', action);
+    this.player.setData('visualLockUntil', time + duration);
+  }
+
+  updatePlayerPresentation(time) {
+    const p = this.player;
+    if (!p?.body) return;
+
+    const lockUntil = Number(p.getData('visualLockUntil') ?? 0);
+    if (lockUntil > time) return;
+    if (this.attacking && this.textures.exists('player-light')) {
+      if (p.texture.key !== 'player-light') p.setTexture('player-light');
+      return;
+    }
+
+    const grounded = Boolean(p.body.blocked.down || p.body.touching.down);
+    const vx = p.body.velocity.x;
+    const vy = p.body.velocity.y;
+    let key = 'player';
+    if (!grounded && Math.abs(vy) > 20) key = 'player-jump';
+    else if (Math.abs(vx) > 35) key = Math.floor(time / 105) % 2 ? 'player-run-a' : 'player-run-b';
+
+    if (this.textures.exists(key) && p.texture.key !== key) p.setTexture(key);
+    p.setFlipX((this.controller?.facing ?? (p.flipX ? -1 : 1)) < 0);
   }
 
   toggleDeveloperOverlay() {
@@ -115,26 +159,32 @@ export class BaseLabScene extends Phaser.Scene {
   }
 
   setupJuiceEvents() {
-    this.events.on('player-jump', (x, y) => this.vfx.burst(x, y + 27, { color: 0xd9efff, count: 6, speed: 70, scale: 0.36, gravity: 12 }));
-    this.events.on('player-land', (x, y) => this.vfx.burst(x, y + 30, { color: 0xdfd3c0, count: 8, speed: 80, scale: 0.36, gravity: 24 }));
+    this.events.on('player-jump', (x, y) => this.vfx.burst(x, y + 34, { color: 0xe5f4ff, count: 7, speed: 72, scale: 0.34, gravity: 18 }));
+    this.events.on('player-land', (x, y) => {
+      this.vfx.groundDust(x, y + 42, { color: 0xd7c6a7 });
+      this.vfx.burst(x, y + 38, { color: 0xe1d2b7, count: 7, speed: 70, scale: 0.3, gravity: 25 });
+    });
     this.events.on('player-dash', (x, y) => {
-      if (this.player) this.vfx.afterImage(this.player, { color: this.accent, alpha: 0.34, drift: 34, duration: 220 });
-      this.vfx.burst(x, y + 24, { color: this.accent, count: 7, speed: 95, scale: 0.4 });
+      if (this.player) {
+        this.vfx.afterImage(this.player, { color: this.accent, alpha: 0.3, drift: 34, duration: 210 });
+        this.time.delayedCall(42, () => this.player && this.vfx.afterImage(this.player, { color: 0x86ecff, alpha: 0.18, drift: 26, duration: 190 }));
+      }
+      this.vfx.burst(x, y + 26, { color: this.accent, count: 8, speed: 110, scale: 0.36 });
     });
   }
 
   createGlobalHelp() {
     const { width, height } = this.scale;
     const container = this.add.container(width / 2, height / 2).setScrollFactor(0).setDepth(this.uiDepth + 80).setVisible(false);
-    const shadow = this.add.graphics().fillStyle(0x070711, 0.72).fillRect(-width / 2, -height / 2, width, height);
+    const shadow = this.add.graphics().fillStyle(0x060713, 0.76).fillRect(-width / 2, -height / 2, width, height);
     const panel = this.add.graphics();
-    panel.fillStyle(0x18172a, 0.98).fillRect(-280, -180, 560, 360);
-    panel.lineStyle(3, 0x776b9d, 0.8).strokeRect(-280, -180, 560, 360);
-    panel.lineStyle(1, this.accent ?? THEME.violet, 0.9).strokeRect(-268, -168, 536, 336);
-    const title = this.add.text(0, -140, 'DEVELOPER LAB CONTROLS', { fontFamily: 'Trebuchet MS', fontSize: '20px', fontStyle: '700', color: '#fff4db' }).setOrigin(0.5);
-    const body = this.add.text(-220, -94,
-      'MOVE                  A / D  or  ← / →\nJUMP                  W / SPACE / ↑\nDASH                  SHIFT\n\nSWITCH LAB            1 … 6\nRESET                  R\nDEBUG OVERLAY          F2\nRETURN TO LAB SELECT   ESC\nHELP                   H\n\nThe default view intentionally mirrors a player-facing game screen.\nDeveloper telemetry stays hidden until F2.',
-      { fontFamily: 'monospace', fontSize: '12px', color: '#d9d1df', lineSpacing: 7 });
+    panel.fillStyle(0x17172b, 0.985).fillRoundedRect(-276, -174, 552, 348, 10);
+    panel.lineStyle(2, 0x8275a0, 0.9).strokeRoundedRect(-276, -174, 552, 348, 10);
+    panel.lineStyle(1, this.accent ?? THEME.violet, 0.7).strokeRoundedRect(-266, -164, 532, 328, 7);
+    const title = this.add.text(0, -137, 'DEVELOPER LAB CONTROLS', { fontFamily: 'Trebuchet MS', fontSize: '19px', fontStyle: '700', color: '#fff2dc' }).setOrigin(0.5);
+    const body = this.add.text(-215, -91,
+      'MOVE                  A / D  or  ← / →\nJUMP                  W / SPACE / ↑\nDASH                  SHIFT\n\nSWITCH LAB            1 … 6\nRESET                  R\nDEBUG OVERLAY          F2\nRETURN TO LAB SELECT   ESC\nHELP                   H\n\nPlayer-facing presentation is the default.\nTelemetry stays hidden until F2.',
+      { fontFamily: 'monospace', fontSize: '12px', color: '#d8d2e0', lineSpacing: 7 });
     container.add([shadow, panel, title, body]);
     this.helpPanel = container;
   }
@@ -143,11 +193,9 @@ export class BaseLabScene extends Phaser.Scene {
 
   makePanel(x, y, width, height, { accent = this.accent, alpha = 0.92, depth = this.uiDepth } = {}) {
     const g = this.add.graphics().setScrollFactor(0).setDepth(depth);
-    g.fillStyle(0x171729, alpha).fillRect(x, y, width, height);
-    g.fillStyle(0x080914, 0.25).fillRect(x + 6, y + 6, width, height);
-    g.lineStyle(2, 0x6f678d, 0.72).strokeRect(x, y, width, height);
-    g.lineStyle(1, accent, 0.55).strokeRect(x + 5, y + 5, width - 10, height - 10);
-    g.fillStyle(accent, 0.95).fillTriangle(x, y, x + 36, y, x, y + 36);
+    g.fillStyle(0x121326, alpha).fillRoundedRect(x, y, width, height, 8);
+    g.lineStyle(1, 0x716a88, 0.8).strokeRoundedRect(x, y, width, height, 8);
+    g.lineStyle(1, accent, 0.45).strokeRoundedRect(x + 5, y + 5, width - 10, height - 10, 5);
     return g;
   }
 
@@ -160,32 +208,30 @@ export class BaseLabScene extends Phaser.Scene {
     const bg = this.add.graphics();
     const draw = (hover = false) => {
       bg.clear();
-      bg.fillStyle(hover ? 0x292541 : 0x19182d, 0.98).fillRect(0, 0, width, 34);
-      bg.lineStyle(2, hover ? accent : 0x655e7d, enabled ? 0.9 : 0.25).strokeRect(0, 0, width, 34);
-      bg.fillStyle(accent, hover ? 0.9 : 0.48).fillTriangle(0, 0, 16, 0, 0, 16);
+      bg.fillStyle(hover ? 0x292541 : 0x19182d, 0.98).fillRoundedRect(0, 0, width, 34, 6);
+      bg.lineStyle(2, hover ? accent : 0x655e7d, enabled ? 0.9 : 0.25).strokeRoundedRect(0, 0, width, 34, 6);
     };
     draw(false);
     const hit = this.add.rectangle(width / 2, 17, width, 34, 0xffffff, 0.0001).setInteractive({ useHandCursor: enabled });
     const text = this.add.text(width / 2, 17, label, { fontFamily: 'Trebuchet MS', fontSize: '11px', fontStyle: '700', color: enabled ? '#fff2dd' : '#6c6879' }).setOrigin(0.5);
-    if (enabled) { hit.on('pointerover', () => draw(true)); hit.on('pointerout', () => draw(false)); hit.on('pointerdown', () => { draw(true); onClick(); }); }
+    if (enabled) { hit.on('pointerover', () => draw(true)); hit.on('pointerout', () => draw(false)); hit.on('pointerdown', () => onClick()); }
     container.add([bg, hit, text]);
     return container;
   }
 
   createPlayer(x, y) {
-    const player = this.physics.add.sprite(x, y, 'player').setDepth(20).setCollideWorldBounds(true);
-    player.body.setSize(35, 64).setOffset(14, 9);
+    const player = this.physics.add.sprite(x, y, 'player').setDepth(20).setCollideWorldBounds(true).setScale(0.9);
+    player.body.setSize(42, 74).setOffset(27, 27);
     player.setMaxVelocity(900, 1100);
+    player.setData('visualLockUntil', 0);
     return player;
   }
 
   createGround(y, { x = 0, width = this.scale.width, thickness = 50 } = {}) {
-    const ground = this.add.rectangle(x + width / 2, y + thickness / 2, width, thickness, 0x1d2639).setDepth(4);
+    const ground = this.add.rectangle(x + width / 2, y + thickness / 2, width, thickness, 0x172033).setDepth(4);
     this.physics.add.existing(ground, true);
-    this.add.rectangle(x + width / 2, y + 5, width, 10, 0x5b8a67).setDepth(5);
-    this.add.rectangle(x + width / 2, y + 1, width, 3, 0xa6d28a).setDepth(6);
-    const stones = this.add.graphics().setDepth(5);
-    for (let sx = x + 18; sx < x + width; sx += 46) stones.fillStyle(0x34415a, 0.7).fillRect(sx, y + 18 + ((sx / 46) % 2) * 9, 26, 3);
+    this.add.rectangle(x + width / 2, y + 5, width, 10, 0x568866).setDepth(5);
+    this.add.rectangle(x + width / 2, y + 1, width, 3, 0xb2df96).setDepth(6);
     return ground;
   }
 
@@ -197,13 +243,12 @@ export class BaseLabScene extends Phaser.Scene {
 
   toast(message, { color = '#fff1df', accent = this.accent } = {}) {
     const { width } = this.scale;
-    const y = 70;
+    const y = 62;
     const box = this.add.graphics().setScrollFactor(0).setDepth(this.uiDepth + 50);
-    box.fillStyle(0x161526, 0.94).fillRect(width - 338, y, 314, 39);
-    box.lineStyle(1, 0x766b91, 0.8).strokeRect(width - 338, y, 314, 39);
-    box.fillStyle(accent, 0.9).fillTriangle(width - 338, y, width - 314, y, width - 338, y + 24);
-    const text = this.add.text(width - 318, y + 12, message, { fontFamily: 'Trebuchet MS', fontSize: '10px', color }).setScrollFactor(0).setDepth(this.uiDepth + 51);
-    this.tweens.add({ targets: [box, text], alpha: 0, y: '-=8', duration: 220, delay: 1300, onComplete: () => { box.destroy(); text.destroy(); } });
+    box.fillStyle(0x111225, 0.93).fillRoundedRect(width - 334, y, 314, 38, 7);
+    box.lineStyle(1, accent, 0.6).strokeRoundedRect(width - 334, y, 314, 38, 7);
+    const text = this.add.text(width - 316, y + 12, message, { fontFamily: 'Trebuchet MS', fontSize: '10px', fontStyle: '700', color }).setScrollFactor(0).setDepth(this.uiDepth + 51);
+    this.tweens.add({ targets: [box, text], alpha: 0, y: '-=8', duration: 260, delay: 1250, onComplete: () => { box.destroy(); text.destroy(); } });
   }
 
   toggleHitboxes() {
