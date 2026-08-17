@@ -86,9 +86,20 @@ export class BootScene extends Phaser.Scene {
     const texture = this.textures.addImage('generated-atlas', image);
     if (!texture || !metadata?.frames) throw new Error('Generated atlas texture could not be registered.');
 
+    const sourceWidth = Math.max(1, Number(metadata.width) || image.naturalWidth || image.width);
+    const sourceHeight = Math.max(1, Number(metadata.height) || image.naturalHeight || image.height);
+    const decodedWidth = image.naturalWidth || image.width;
+    const decodedHeight = image.naturalHeight || image.height;
+    const scaleX = decodedWidth / sourceWidth;
+    const scaleY = decodedHeight / sourceHeight;
+
     for (const [name, frame] of Object.entries(metadata.frames)) {
       if (!frame || frame.w <= 0 || frame.h <= 0) continue;
-      if (!texture.has(name)) texture.add(name, 0, frame.x, frame.y, frame.w, frame.h);
+      const x = Phaser.Math.Clamp(Math.round(frame.x * scaleX), 0, Math.max(0, decodedWidth - 1));
+      const y = Phaser.Math.Clamp(Math.round(frame.y * scaleY), 0, Math.max(0, decodedHeight - 1));
+      const width = Phaser.Math.Clamp(Math.round(frame.w * scaleX), 1, decodedWidth - x);
+      const height = Phaser.Math.Clamp(Math.round(frame.h * scaleY), 1, decodedHeight - y);
+      if (!texture.has(name)) texture.add(name, 0, x, y, width, height);
     }
   }
 
