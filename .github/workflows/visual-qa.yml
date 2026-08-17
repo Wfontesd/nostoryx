@@ -1,0 +1,86 @@
+name: Visual QA Gauntlet
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - agent/visual-quality-gauntlet
+    paths:
+      - 'index.html'
+      - 'public/**'
+      - 'src/**'
+      - 'qa/**'
+      - 'scripts/**'
+      - '.github/workflows/visual-qa.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: visual-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser-gauntlet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Validate deterministic logic and static build
+        run: npm run ci
+
+      - name: Install pinned browser harness
+        run: |
+          npm install --no-save playwright-chromium@1.61.1
+          npx playwright install --with-deps chromium
+
+      - name: Start local Dev Labs server
+        shell: bash
+        run: |
+          set -euo pipefail
+          nohup npm run dev > qa-server.log 2>&1 &
+          echo $! > qa-server.pid
+          for attempt in {1..40}; do
+            if curl --fail --silent http://127.0.0.1:4173/ > /dev/null; then
+              exit 0
+            fi
+            sleep 0.5
+          done
+          cat qa-server.log
+          exit 1
+
+      - name: Run functional and visual browser gauntlet
+        id: visual
+        continue-on-error: true
+        env:
+          QA_BASE_URL: http://127.0.0.1:4173
+          QA_OUTPUT_DIR: qa-artifacts
+        run: node qa/visual-qa.mjs
+
+      - name: Add server log to report
+        if: always()
+        run: cp qa-server.log qa-artifacts/server.log || true
+
+      - name: Upload screenshots and runtime report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nostoryx-visual-qa-${{ github.sha }}
+          path: qa-artifacts
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Enforce visual QA result
+        if: steps.visual.outcome == 'failure'
+        run: |
+          cat qa-artifacts/summary.txt || true
+          exit 1
