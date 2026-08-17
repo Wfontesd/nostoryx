@@ -15,7 +15,7 @@ on:
       - '.github/workflows/visual-qa.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: visual-qa-${{ github.ref }}
@@ -78,6 +78,31 @@ jobs:
           path: qa-artifacts
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish latest QA evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f qa-artifacts/report.json ]; then
+            echo 'No QA report to publish.'
+            exit 0
+          fi
+
+          RESULTS_DIR="$(mktemp -d)"
+          cp -R qa-artifacts/. "$RESULTS_DIR/"
+          printf '%s\n' "${GITHUB_SHA}" > "$RESULTS_DIR/source-sha.txt"
+          printf '%s\n' "${GITHUB_REF_NAME}" > "$RESULTS_DIR/source-branch.txt"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan qa-results
+          git rm -rf .
+          cp -R "$RESULTS_DIR"/. .
+          touch .nojekyll
+          git add -A
+          git commit -m "qa: visual evidence ${GITHUB_SHA}"
+          git push --force origin qa-results
 
       - name: Enforce visual QA result
         if: steps.visual.outcome == 'failure'
