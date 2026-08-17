@@ -1,3 +1,4 @@
+import './game/systems/phaser-texture-safety.js';
 import { BootScene } from './game/scenes/boot-scene.js';
 import { LabHubScene } from './game/scenes/lab-hub-scene.js';
 import { MovementLabScene } from './game/scenes/movement-lab-scene.js';
