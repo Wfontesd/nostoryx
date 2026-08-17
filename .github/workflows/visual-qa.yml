@@ -40,7 +40,7 @@ jobs:
 
       - name: Install pinned browser harness
         run: |
-          npm install --no-save playwright-chromium@1.61.1
+          npm install --no-save playwright-chromium@1.61.1 pngjs@7.0.0
           npx playwright install --with-deps chromium
 
       - name: Start local Dev Labs server
@@ -64,11 +64,17 @@ jobs:
         env:
           QA_BASE_URL: http://127.0.0.1:4173
           QA_OUTPUT_DIR: qa-artifacts
-        run: node qa/visual-gauntlet-v3.mjs
+        run: node qa/visual-gauntlet-v4.mjs
 
-      - name: Add server log to report
+      - name: Add reproducibility metadata
         if: always()
-        run: cp qa-server.log qa-artifacts/server.log || true
+        shell: bash
+        run: |
+          mkdir -p qa-artifacts
+          printf '%s\n' "${GITHUB_RUN_ID}" > qa-artifacts/run-id.txt
+          printf '%s\n' "${GITHUB_SHA}" > qa-artifacts/source-sha.txt
+          printf '%s\n' "${GITHUB_REF_NAME}" > qa-artifacts/source-branch.txt
+          cp qa-server.log qa-artifacts/server.log || true
 
       - name: Upload screenshots and runtime report
         if: always()
@@ -91,8 +97,6 @@ jobs:
 
           RESULTS_DIR="$(mktemp -d)"
           cp -R qa-artifacts/. "$RESULTS_DIR/"
-          printf '%s\n' "${GITHUB_SHA}" > "$RESULTS_DIR/source-sha.txt"
-          printf '%s\n' "${GITHUB_REF_NAME}" > "$RESULTS_DIR/source-branch.txt"
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -109,5 +113,3 @@ jobs:
         run: |
           cat qa-artifacts/summary.txt || true
           exit 1
-
-# Explicit rerun marker: atlas normalization and current branch state must be re-evaluated.
