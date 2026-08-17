@@ -10,21 +10,17 @@ export class MovementLabScene extends BaseLabScene {
     this.physics.world.setBounds(0, 54, this.scale.width, this.scale.height - 54);
 
     this.ground = this.createGround(652);
-    this.platforms = this.physics.add.staticGroup();
     const placements = [
-      [390, 565, 170], [590, 495, 132], [760, 424, 116], [925, 507, 170], [1082, 382, 124],
+      [360, 566, 178], [570, 492, 142], [758, 414, 124], [936, 500, 182], [1096, 368, 138],
     ];
-    for (const [x, y, width] of placements) {
-      const platform = this.platforms.create(x, y, 'platform').setDepth(8).setScale(width / 128, 1).refreshBody();
-      platform.setTint(0xb9d6e6);
-    }
+    this.platforms = placements.map(([x, y, width]) => this.createPlatform(x, y, width));
 
     this.player = this.createPlayer(135, 590);
     this.controller = new PlayerController(this, this.player, { speed: 292, jumpSpeed: 640, dashSpeed: 760 });
     this.physics.add.collider(this.player, this.ground);
-    this.physics.add.collider(this.player, this.platforms);
+    for (const platform of this.platforms) this.physics.add.collider(this.player, platform);
 
-    this.finish = this.add.image(1110, 326, 'target').setTint(THEME.cyan).setAlpha(0.58).setDepth(9);
+    this.finish = this.add.image(1110, 302, 'target').setTint(THEME.cyan).setAlpha(0.58).setDepth(9);
     this.tweens.add({ targets: this.finish, rotation: Math.PI * 2, duration: 5000, repeat: -1, ease: 'Linear' });
     this.tweens.add({ targets: this.finish, scale: { from: 0.92, to: 1.08 }, alpha: { from: 0.42, to: 0.72 }, duration: 1100, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
 
@@ -80,11 +76,11 @@ export class MovementLabScene extends BaseLabScene {
     if (!this.player) return;
 
     if (this.player.y > this.scale.height + 20) this.player.setPosition(135, 590).setVelocity(0, 0);
-    if (!this.finishReached && Phaser.Math.Distance.Between(this.player.x, this.player.y, 1110, 326) < 62) {
+    if (!this.finishReached && Phaser.Math.Distance.Between(this.player.x, this.player.y, 1110, 302) < 62) {
       this.finishReached = true;
-      this.vfx.castSigil(1110, 326, { color: THEME.cyan, scale: 0.9, duration: 520 });
-      this.vfx.shockwave(1110, 326, { color: THEME.cyan, scale: 1.8 });
-      this.vfx.radialImpact(1110, 326, { color: THEME.cyan, power: 0.85 });
+      this.vfx.castSigil(1110, 302, { color: THEME.cyan, scale: 0.9, duration: 520 });
+      this.vfx.shockwave(1110, 302, { color: THEME.cyan, scale: 1.8 });
+      this.vfx.radialImpact(1110, 302, { color: THEME.cyan, power: 0.85 });
       this.objectiveTitle?.setText('TRIAL COMPLETE');
       this.objectiveBody?.setText('Movement path validated');
       this.toast('Course marker reached · movement loop valid', { accent: THEME.cyan });
@@ -97,7 +93,7 @@ export class MovementLabScene extends BaseLabScene {
 
     if (Phaser.Input.Keyboard.JustDown(this.hitboxKey)) this.toggleHitboxes();
     if (Phaser.Input.Keyboard.JustDown(this.checkKey)) {
-      this.player.setPosition(735, 360).setVelocity(0, 0);
+      this.player.setPosition(735, 350).setVelocity(0, 0);
       this.toast('Teleported to platform checkpoint', { accent: THEME.cyan });
     }
 
