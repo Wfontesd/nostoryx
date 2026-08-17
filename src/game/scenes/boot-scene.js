@@ -1,5 +1,9 @@
 import { THEME } from '../theme.js';
 
+const GENERATED_ATLAS_PARTS = Object.freeze([
+  '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '11b', '12', '13', '14',
+]);
+
 export class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
 
@@ -56,7 +60,7 @@ export class BootScene extends Phaser.Scene {
     const root = new URL('public/generated/', window.location.href);
     const [metadataResponse, ...partResponses] = await Promise.all([
       fetch(new URL('nostoryx-generated-atlas.json', root), { cache: 'no-store' }),
-      ...Array.from({ length: 15 }, (_, index) => fetch(new URL(`atlas.b64.${String(index).padStart(2, '0')}`, root), { cache: 'force-cache' })),
+      ...GENERATED_ATLAS_PARTS.map((part) => fetch(new URL(`atlas.b64.${part}`, root), { cache: 'force-cache' })),
     ]);
 
     if (!metadataResponse.ok || partResponses.some((response) => !response.ok)) {
