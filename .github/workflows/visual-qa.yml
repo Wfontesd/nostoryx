@@ -64,7 +64,7 @@ jobs:
         env:
           QA_BASE_URL: http://127.0.0.1:4173
           QA_OUTPUT_DIR: qa-artifacts
-        run: node qa/visual-qa.mjs
+        run: node qa/visual-gauntlet.mjs
 
       - name: Add server log to report
         if: always()
