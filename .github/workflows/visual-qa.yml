@@ -109,3 +109,5 @@ jobs:
         run: |
           cat qa-artifacts/summary.txt || true
           exit 1
+
+# Explicit rerun marker: atlas normalization and current branch state must be re-evaluated.
