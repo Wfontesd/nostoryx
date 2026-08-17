@@ -5,6 +5,8 @@ import { session } from '../systems/session.js';
 import { THEME } from '../theme.js';
 import { MONSTER_ART, addAtlasArt, atlasHas, setAtlasArt } from '../systems/generated-art.js';
 
+const LEVELS = Object.freeze({ slime: 4, wisp: 7, brute: 12 });
+
 export class MonsterLabScene extends BaseLabScene {
   constructor() { super('MonsterLab'); }
 
@@ -31,7 +33,7 @@ export class MonsterLabScene extends BaseLabScene {
 
     this.createDevOverlay();
     this.createPlayerVitals();
-    const hint = this.add.text(this.scale.width / 2, this.scale.height - 34, 'Q  SLIME     W  WISP     E  BRUTE     C  AI     G  GOD     X  CLEAR', {
+    const hint = this.add.text(this.scale.width / 2, this.scale.height - 32, 'Q  SLIME     W  WISP     E  BRUTE     C  AI     G  GOD     X  CLEAR', {
       fontFamily: 'Trebuchet MS', fontSize: '10px', fontStyle: '700', color: '#ecf9ed', stroke: '#101520', strokeThickness: 4,
     }).setOrigin(0.5).setScrollFactor(0).setDepth(this.uiDepth + 5).setAlpha(0.78);
     this.tweens.add({ targets: hint, alpha: 0.28, duration: 500, delay: 4500 });
@@ -72,7 +74,7 @@ export class MonsterLabScene extends BaseLabScene {
     this.playerHpText?.setText(`${this.playerHp}/100${session.flags.godMode ? ' · GOD' : ''}`);
   }
 
-  monsterPose(typeId, state) {
+  monsterPose(state) {
     if (state === 'attack') return 'attack';
     if (state === 'chase' || state === 'retreat') return 'move';
     return 'idle';
@@ -99,13 +101,22 @@ export class MonsterLabScene extends BaseLabScene {
       art?.setDepth(20);
     }
 
-    sprite.setData({ typeId, hp: config.hp, maxHp: config.hp, state: 'idle', nextAttackAt: 0, spawnX: x, art, artPose: 'idle' });
-    const stateLabel = this.add.text(x, y - (typeId === 'brute' ? 92 : 62), '', {
-      fontFamily: 'Trebuchet MS', fontSize: '9px', fontStyle: '700', color: '#dce8df', backgroundColor: '#0b1118bb', padding: { x: 6, y: 3 },
-    }).setOrigin(0.5).setDepth(35).setAlpha(0.74);
-    sprite.setData('stateLabel', stateLabel);
+    const nameLabel = this.add.text(x, y - (typeId === 'brute' ? 112 : 78), `${config.label.toUpperCase()}  ·  Lv. ${LEVELS[typeId]}`, {
+      fontFamily: 'Trebuchet MS', fontSize: '9px', fontStyle: '700', color: '#f0f4e9', stroke: '#0c1117', strokeThickness: 4,
+    }).setOrigin(0.5).setDepth(35);
+    const hpFrame = this.add.graphics().setDepth(34);
+    const hpBar = this.add.graphics().setDepth(35);
+    const stateLabel = this.add.text(x, y - (typeId === 'brute' ? 136 : 102), 'IDLE', {
+      fontFamily: 'monospace', fontSize: '8px', color: '#9ee3b5', backgroundColor: '#08100fdd', padding: { x: 5, y: 2 },
+    }).setOrigin(0.5).setDepth(36).setVisible(false);
+
+    sprite.setData({
+      typeId, hp: config.hp, maxHp: config.hp, state: 'idle', nextAttackAt: 0, spawnX: x,
+      art, artPose: 'idle', nameLabel, hpFrame, hpBar, stateLabel,
+    });
     this.monsters.push(sprite);
     this.vfx.shockwave(x, y, { color: config.color, scale: 0.72, duration: 280 });
+    this.renderMonsterHud(sprite);
     return sprite;
   }
 
@@ -131,12 +142,36 @@ export class MonsterLabScene extends BaseLabScene {
     art.setPosition(monster.x, monster.y + baseY).setFlipX(monster.flipX);
   }
 
+  renderMonsterHud(monster) {
+    const typeId = monster.getData('typeId');
+    const config = MONSTER_TYPES[typeId];
+    const yOffset = typeId === 'brute' ? 112 : 78;
+    const width = typeId === 'brute' ? 132 : 92;
+    const ratio = Phaser.Math.Clamp(monster.getData('hp') / monster.getData('maxHp'), 0, 1);
+    const x = monster.x - width / 2;
+    const y = monster.y - yOffset + 17;
+
+    monster.getData('nameLabel')?.setPosition(monster.x, monster.y - yOffset);
+    const frame = monster.getData('hpFrame');
+    frame?.clear().fillStyle(0x0b1117, 0.88).fillRoundedRect(x, y, width, 8, 4)
+      .lineStyle(1, 0xa3ad9f, 0.42).strokeRoundedRect(x, y, width, 8, 4);
+    monster.getData('hpBar')?.clear().fillStyle(config.color, 1).fillRoundedRect(x + 2, y + 2, (width - 4) * ratio, 4, 2);
+
+    const stateLabel = monster.getData('stateLabel');
+    stateLabel?.setVisible(this.debugVisible).setPosition(monster.x, monster.y - yOffset - 25);
+  }
+
+  destroyMonster(monster) {
+    monster.getData('nameLabel')?.destroy();
+    monster.getData('stateLabel')?.destroy();
+    monster.getData('hpFrame')?.destroy();
+    monster.getData('hpBar')?.destroy();
+    monster.getData('art')?.destroy();
+    monster.destroy();
+  }
+
   clearMonsters() {
-    for (const monster of this.monsters) {
-      monster.getData('stateLabel')?.destroy();
-      monster.getData('art')?.destroy();
-      monster.destroy();
-    }
+    for (const monster of this.monsters) this.destroyMonster(monster);
     this.monsters = [];
     this.toast('Monster sandbox cleared', { accent: THEME.green });
   }
@@ -157,18 +192,18 @@ export class MonsterLabScene extends BaseLabScene {
     monster.setFlipX(vx < 0 || (vx === 0 && this.player.x < monster.x));
     if (typeId === 'wisp') monster.setVelocityY(Math.sin((time + monster.x) / 410) * 24);
 
-    if (time >= Number(monster.getData('artLockUntil') ?? 0)) this.setMonsterArt(monster, this.monsterPose(typeId, state));
+    if (time >= Number(monster.getData('artLockUntil') ?? 0)) this.setMonsterArt(monster, this.monsterPose(state));
     this.syncMonsterArt(monster);
+    this.renderMonsterHud(monster);
 
     const stateLabel = monster.getData('stateLabel');
-    stateLabel?.setPosition(monster.x, monster.y - (typeId === 'brute' ? 92 : 62));
-    stateLabel?.setText(`${config.label.toUpperCase()} · ${state.toUpperCase()}`);
-    stateLabel?.setColor(state === 'attack' ? '#ffd09a' : state === 'chase' ? '#a4efbb' : '#c6d2c9');
+    stateLabel?.setText(state.toUpperCase()).setColor(state === 'attack' ? '#ffd09a' : state === 'chase' ? '#a4efbb' : '#c6d2c9');
 
     if (state === 'attack' && time >= monster.getData('nextAttackAt')) {
       monster.setData('nextAttackAt', time + 1050);
       this.setMonsterArt(monster, 'attack', typeId === 'brute' ? 350 : 220);
       const facing = Math.sign(this.player.x - monster.x) || 1;
+      this.vfx.castSigil(monster.x, monster.y + (typeId === 'wisp' ? 15 : 32), { color: config.color, scale: typeId === 'brute' ? 0.52 : 0.34, duration: typeId === 'brute' ? 310 : 220 });
       this.time.delayedCall(typeId === 'brute' ? 210 : 120, () => {
         if (!monster.active) return;
         this.vfx.slash(monster.x, monster.y, facing, { color: config.color, heavy: typeId === 'brute' });
