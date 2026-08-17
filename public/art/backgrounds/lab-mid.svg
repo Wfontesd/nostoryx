@@ -1,1 +1,79 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="760" viewBox="0 0 1500 760"><defs><linearGradient id="stone" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#5f5c7f"/><stop offset="1" stop-color="#32384f"/></linearGradient><linearGradient id="leaf" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#5e9f78"/><stop offset="1" stop-color="#284d49"/></linearGradient></defs><g opacity=".96"><path d="M20 620C70 490 95 410 140 335c42 92 66 185 93 285Z" fill="#243e46"/><path d="M55 620c15-84 45-145 88-198 40 55 70 117 88 198Z" fill="url(#leaf)"/><path d="M1280 620c15-106 48-202 96-290 44 96 72 191 88 290Z" fill="#223f48"/><path d="M1305 620c16-72 40-132 72-185 34 52 57 114 70 185Z" fill="url(#leaf)"/></g><g fill="url(#stone)" stroke="#777394" stroke-width="3"><path d="M310 620V330h44v290Zm180 0V330h44v290Z"/><path d="M300 337h244v34H300Z"/><path d="M330 337c0-132 180-132 180 0h-38c0-82-104-82-104 0Z"/><path d="M950 620V388h42v232Zm164 0V388h42v232Z"/><path d="M940 393h226v30H940Z"/><path d="M974 392c0-106 148-106 148 0h-34c0-62-80-62-80 0Z"/></g><g stroke="#9c8cbc" stroke-width="4" opacity=".45"><path d="M336 390v156m172-156v156M975 438v130m156-130v130"/></g><g fill="#7cbf85" opacity=".85"><path d="M278 356c38-18 79-24 118-10-28 18-66 34-118 28Z"/><path d="M462 352c42-16 84-14 116 4-32 20-70 28-116 18Z"/><path d="M916 420c34-17 72-20 108-9-22 20-58 31-108 27Z"/></g><g fill="#d7b67d" opacity=".32"><circle cx="420" cy="500" r="5"/><circle cx="460" cy="540" r="3"/><circle cx="1030" cy="500" r="4"/><circle cx="1200" cy="560" r="3"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="760" viewBox="0 0 1500 760">
+  <defs>
+    <linearGradient id="tree" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#26374a"/>
+      <stop offset="1" stop-color="#101a2b"/>
+    </linearGradient>
+    <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#566078"/>
+      <stop offset=".52" stop-color="#343c55"/>
+      <stop offset="1" stop-color="#1d263b"/>
+    </linearGradient>
+    <linearGradient id="moss" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#5b9972"/>
+      <stop offset=".45" stop-color="#8bb77b"/>
+      <stop offset="1" stop-color="#466d62"/>
+    </linearGradient>
+    <radialGradient id="crystal">
+      <stop stop-color="#dff7ff"/>
+      <stop offset=".35" stop-color="#78d9ee"/>
+      <stop offset="1" stop-color="#6e61d6" stop-opacity=".08"/>
+    </radialGradient>
+  </defs>
+
+  <g opacity=".9" fill="url(#tree)">
+    <path d="M0 632c32-86 58-151 94-202 13 48 16 86 12 117 22-59 49-111 83-154 8 62 1 116-17 162 30-40 61-72 94-93-4 73-28 130-69 170Z"/>
+    <path d="M1500 632c-31-102-69-178-112-234-7 55-1 104 18 146-32-57-66-101-104-132 0 73 18 132 54 177-25-31-51-54-78-70 9 52 33 91 73 113Z"/>
+    <path d="M84 619c18-91 41-165 68-220l19 3c-6 57-1 107 16 150 20-84 47-151 80-202l15 7c-13 85-5 164 23 237Z" opacity=".48"/>
+    <path d="M1377 619c-16-87-40-160-73-219l-18 7c15 71 12 129-7 177-20-74-45-132-74-175l-16 8c17 79 10 149-20 209Z" opacity=".48"/>
+  </g>
+
+  <g fill="url(#stone)" stroke="#79809a" stroke-width="2.5" opacity=".8">
+    <path d="M210 627V455l22-18 26 16v174Z"/>
+    <path d="M196 462h76l-9-20-22-14-28 13Z"/>
+    <path d="M315 627V360l25-17 27 17v267Z"/>
+    <path d="M301 369h83l-8-25-33-23-33 24Z"/>
+    <path d="M418 627V487l19-14 22 15v139Z"/>
+    <path d="M402 494h73l-12-22-23-12-24 13Z"/>
+
+    <path d="M1092 627V420l22-16 25 16v207Z"/>
+    <path d="M1078 429h78l-10-24-29-18-28 18Z"/>
+    <path d="M1191 627V330l27-20 29 20v297Z"/>
+    <path d="M1175 341h88l-12-29-31-22-33 22Z"/>
+    <path d="M1308 627V478l20-14 23 15v148Z"/>
+    <path d="M1294 486h73l-9-22-27-14-26 14Z"/>
+  </g>
+
+  <g fill="#182338" opacity=".9">
+    <path d="M160 627h335v-18l-25-13-19 8-34-20-45 17-41-12-38 15-35-11-49 15-29-9-40 11Z"/>
+    <path d="M1025 627h379v-18l-35-15-28 10-39-22-42 18-43-16-42 19-38-13-49 16-31-9-32 12Z"/>
+  </g>
+
+  <g fill="none" stroke="#7ab083" stroke-linecap="round" opacity=".58">
+    <path d="M325 357c-40 45-53 94-42 148 7 35-1 69-25 103" stroke-width="8"/>
+    <path d="M1224 326c34 48 43 99 27 153-10 34-5 69 18 104" stroke-width="8"/>
+    <path d="M213 450c37 24 63 57 78 98" stroke-width="6"/>
+    <path d="M1137 416c-34 28-55 65-62 110" stroke-width="6"/>
+  </g>
+
+  <g fill="url(#moss)" opacity=".9">
+    <path d="M184 455c29-19 61-24 95-15-24 20-53 31-88 32Z"/>
+    <path d="M286 366c39-23 78-27 119-12-27 22-63 34-109 35Z"/>
+    <path d="M1064 421c35-20 71-22 108-7-27 19-59 29-98 28Z"/>
+    <path d="M1164 336c42-25 84-26 126-4-34 20-73 28-116 25Z"/>
+    <path d="M0 605c80-30 160-34 240-11-73 24-153 35-240 31Z"/>
+    <path d="M1260 598c85-27 165-23 240 12-83 17-164 18-240 4Z"/>
+  </g>
+
+  <g fill="url(#crystal)" opacity=".58">
+    <path d="m276 548 12-29 13 29-13 26Z"/>
+    <path d="m389 570 9-21 10 21-10 18Z"/>
+    <path d="m1086 551 11-27 13 27-13 23Z"/>
+    <path d="m1274 535 13-34 15 34-15 29Z"/>
+  </g>
+
+  <g fill="#e7c78c" opacity=".32">
+    <circle cx="178" cy="512" r="3"/><circle cx="262" cy="410" r="2"/><circle cx="350" cy="518" r="3"/>
+    <circle cx="1111" cy="486" r="2.5"/><circle cx="1238" cy="420" r="3"/><circle cx="1330" cy="531" r="2"/>
+  </g>
+</svg>
