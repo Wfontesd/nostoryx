@@ -1,16 +1,21 @@
 import { BaseLabScene } from './base-lab-scene.js';
 import { THEME } from '../theme.js';
+import { GENERATED_ATLAS, MONSTER_ART, addAtlasArt, atlasHas } from '../systems/generated-art.js';
 
 export class VfxLabScene extends BaseLabScene {
   constructor() { super('VfxLab'); }
 
   create() {
-    this.createLabChrome('VFX Lab', 'Compose readable gameplay effects from reusable primitives and timing layers.', THEME.violet);
+    this.createLabChrome('VFX Lab', 'Authored sprites + procedural timing layers. Compare silhouette before particle count.', THEME.violet);
     this.createGround(650);
 
-    this.actor = this.add.image(410, 556, 'player').setScale(1.25).setDepth(20);
-    this.target = this.add.image(840, 555, 'brute').setScale(1.15).setDepth(20);
-    this.targetMarker = this.add.image(840, 555, 'target').setTint(THEME.violet).setAlpha(0.32).setDepth(12);
+    this.actor = atlasHas(this, 'hero_idle')
+      ? addAtlasArt(this, 400, 626, 'hero_idle', { height: 150 })?.setDepth(20)
+      : this.add.image(400, 556, 'player').setScale(1.25).setDepth(20);
+    this.target = atlasHas(this, MONSTER_ART.brute.idle.frame)
+      ? addAtlasArt(this, 860, 630, MONSTER_ART.brute.idle.frame, { height: 175 })?.setDepth(20)
+      : this.add.image(860, 555, 'brute').setScale(1.15).setDepth(20);
+    this.targetMarker = this.add.image(860, 552, 'target').setTint(THEME.violet).setAlpha(0.24).setDepth(12);
     this.tweens.add({ targets: this.targetMarker, rotation: Math.PI * 2, duration: 6000, repeat: -1, ease: 'Linear' });
 
     this.labKeys = this.input.keyboard.addKeys({
@@ -28,82 +33,70 @@ export class VfxLabScene extends BaseLabScene {
     this.lastAutoAt = 0;
     this.autoIndex = 0;
 
-    this.makePanel(22, 104, 326, 218, { accent: THEME.violet });
-    this.add.text(40, 122, 'VFX COMPOSITOR', { fontFamily: 'monospace', fontSize: '11px', color: '#c7b3ff' }).setScrollFactor(0).setDepth(this.uiDepth + 1);
-    this.vfxDebug = this.makeDebugText(40, 150, 'ready');
-    this.add.text(40, 266, 'Q slash  W burst  E lightning\nT meteor  Y heal   A autoplay   [ ] intensity', { fontFamily: 'monospace', fontSize: '10px', color: '#78859a', lineSpacing: 4 }).setScrollFactor(0).setDepth(this.uiDepth + 1);
+    this.createDevOverlay();
+    const hint = this.add.text(this.scale.width / 2, this.scale.height - 34, 'Q SLASH   W IMPACT   E BOLT   T METEOR   Y HEAL   A AUTOPLAY   [ ] INTENSITY', {
+      fontFamily: 'Trebuchet MS', fontSize: '10px', fontStyle: '700', color: '#f3edff', stroke: '#111323', strokeThickness: 4,
+    }).setOrigin(0.5).setDepth(this.uiDepth + 5).setAlpha(0.78);
+    this.tweens.add({ targets: hint, alpha: 0.25, duration: 500, delay: 4800 });
+  }
 
-    this.makePanel(this.scale.width - 348, 104, 326, 202, { accent: 0x674f9e, alpha: 0.88 });
-    this.add.text(this.scale.width - 328, 122, 'QUALITY BAR — NOT JUST PARTICLES', { fontFamily: 'monospace', fontSize: '10px', color: '#c8b5ff' }).setScrollFactor(0).setDepth(this.uiDepth + 1);
-    this.add.text(this.scale.width - 328, 150,
-      '01  anticipation / readable origin\n02  primary silhouette or trail\n03  impact flash / burst\n04  target reaction\n05  camera response when justified\n06  short-lived aftermath\n\nThese primitives are placeholders. Final skills\nwill plug authored sprites / shaders into the same cues.',
-      { fontFamily: 'monospace', fontSize: '10px', color: '#c2cad7', lineSpacing: 4 },
-    ).setScrollFactor(0).setDepth(this.uiDepth + 1);
-
-    const buttons = [
-      ['Q  SLASH', () => this.playSlash(), 390],
-      ['W  BURST', () => this.playBurst(), 504],
-      ['E  BOLT', () => this.playLightning(), 618],
-      ['T  METEOR', () => this.playMeteor(), 732],
-      ['Y  HEAL', () => this.playHeal(), 846],
-    ];
-    for (const [label, action, x] of buttons) this.makeButton(x, 112, 102, label, action, { accent: THEME.violet });
+  createDevOverlay() {
+    const c = this.add.container(18, 110).setScrollFactor(0).setDepth(this.uiDepth + 12).setVisible(false);
+    const bg = this.add.graphics();
+    bg.fillStyle(0x0c0b1a, 0.95).fillRoundedRect(0, 0, 310, 210, 8);
+    bg.lineStyle(1, THEME.violet, 0.65).strokeRoundedRect(0, 0, 310, 210, 8);
+    const title = this.add.text(16, 13, 'VFX COMPOSITOR / F2', { fontFamily: 'monospace', fontSize: '10px', color: '#ceb9ff' });
+    this.vfxDebug = this.add.text(16, 38, 'ready', { fontFamily: 'monospace', fontSize: '10px', color: '#d9d2e3', lineSpacing: 5 });
+    const body = this.add.text(16, 154, 'Primary sprite → impact → reaction → aftermath', { fontFamily: 'monospace', fontSize: '8px', color: '#9991a6' });
+    c.add([bg, title, this.vfxDebug, body]);
+    this.devOverlay = c;
   }
 
   impactTarget(color, strength = 1) {
-    this.target.setTint(0xffffff);
-    this.time.delayedCall(72, () => this.target?.clearTint());
+    this.target.setTint?.(0xffffff);
+    this.time.delayedCall(72, () => this.target?.clearTint?.());
     this.cameras.main.shake(70 + 35 * strength, 0.0025 + 0.002 * strength);
-    this.vfx.burst(this.target.x, this.target.y - 5, { color, count: Math.round(12 * this.intensity), speed: 150 + 70 * strength, scale: 0.75 + 0.2 * this.intensity });
-    this.vfx.shockwave(this.target.x, this.target.y - 4, { color, scale: 0.9 + 0.35 * strength, duration: 300 });
+    this.vfx.radialImpact(this.target.x, this.target.y - 70, { color, power: 0.9 + strength * 0.35 });
+    this.vfx.burst(this.target.x, this.target.y - 70, { color, count: Math.round(12 * this.intensity), speed: 150 + 70 * strength, scale: 0.75 + 0.2 * this.intensity });
+    this.vfx.shockwave(this.target.x, this.target.y - 65, { color, scale: 0.9 + 0.35 * strength, duration: 300 });
     this.tweens.add({ targets: this.target, x: this.target.x + 12 * strength, duration: 55, yoyo: true, repeat: 1, ease: 'Quad.easeOut' });
   }
 
   playSlash() {
-    this.vfx.slash(this.actor.x, this.actor.y, 1, { color: 0xa8e9ff, heavy: false });
+    this.vfx.slash(this.actor.x, this.actor.y - 70, 1, { color: 0xa8e9ff, heavy: false });
     this.time.delayedCall(70, () => this.impactTarget(0xa8e9ff, 0.65));
   }
 
   playBurst() {
-    this.vfx.shockwave(this.actor.x + 65, this.actor.y, { color: 0xff7f4f, scale: 1.2, duration: 280 });
-    this.vfx.burst(this.actor.x + 105, this.actor.y, { color: 0xffa14c, count: Math.round(20 * this.intensity), speed: 250, scale: 1.05 });
-    this.time.delayedCall(110, () => this.impactTarget(0xff9f54, 1));
+    this.vfx.slash(this.actor.x, this.actor.y - 70, 1, { color: 0xffd26e, heavy: true });
+    this.time.delayedCall(110, () => this.impactTarget(0xffb45b, 1.1));
   }
 
   playLightning() {
-    this.vfx.lightning(this.actor.x + 18, this.actor.y - 28, this.target.x - 18, this.target.y - 16, { color: 0xa6ecff });
-    this.time.delayedCall(55, () => this.impactTarget(0xa6ecff, 0.9));
-  }
-
-  playMeteor() {
-    const meteor = this.add.image(this.target.x - 145, 180, 'fx-dot')
-      .setTint(0xffa347)
-      .setBlendMode(Phaser.BlendModes.ADD)
-      .setScale(3.2 * this.intensity)
-      .setDepth(75);
-    for (let i = 0; i < 6; i += 1) {
-      const trail = this.add.image(meteor.x - i * 14, meteor.y - i * 18, 'fx-dot').setTint(i % 2 ? 0xff6a3d : 0xffc25b).setBlendMode(Phaser.BlendModes.ADD).setScale(1.6 - i * 0.17).setAlpha(0.45).setDepth(70);
-      this.tweens.add({ targets: trail, alpha: 0, y: trail.y - 38, duration: 360 + i * 45, onComplete: () => trail.destroy() });
-    }
-    this.tweens.add({
-      targets: meteor,
-      x: this.target.x,
-      y: this.target.y - 16,
-      duration: 420,
-      ease: 'Cubic.easeIn',
-      onComplete: () => {
-        meteor.destroy();
-        this.vfx.burst(this.target.x, this.target.y, { color: 0xff8a45, count: Math.round(26 * this.intensity), speed: 310, scale: 1.15 });
-        this.vfx.shockwave(this.target.x, this.target.y, { color: 0xffc36b, scale: 1.8, duration: 450 });
-        this.impactTarget(0xff9f54, 1.5);
-      },
+    this.vfx.castSigil(this.actor.x + 40, this.actor.y - 110, { color: 0xb991ff, scale: 0.92, duration: 300 });
+    this.time.delayedCall(80, () => {
+      this.vfx.lightning(this.actor.x + 35, this.actor.y - 90, this.target.x - 24, this.target.y - 75, { color: 0xa6ecff });
+      this.impactTarget(0xa6ecff, 0.9);
     });
   }
 
+  playMeteor() {
+    if (atlasHas(this, 'vfx_orb')) {
+      const meteor = this.add.image(this.target.x - 160, 165, GENERATED_ATLAS, 'vfx_orb').setDepth(76).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.92);
+      meteor.setScale(115 / meteor.frame.height);
+      this.tweens.add({ targets: meteor, x: this.target.x, y: this.target.y - 65, angle: 160, duration: 420, ease: 'Cubic.easeIn', onComplete: () => {
+        meteor.destroy();
+        this.impactTarget(0xffa35d, 1.55);
+      } });
+    } else {
+      this.impactTarget(0xffa35d, 1.55);
+    }
+  }
+
   playHeal() {
-    this.vfx.heal(this.actor.x, this.actor.y);
-    this.actor.setTint(0x9affcf);
-    this.time.delayedCall(260, () => this.actor?.clearTint());
+    this.vfx.heal(this.actor.x, this.actor.y - 70);
+    this.actor.setTint?.(0x9affcf);
+    this.time.delayedCall(260, () => this.actor?.clearTint?.());
   }
 
   update(time) {
@@ -128,10 +121,9 @@ export class VfxLabScene extends BaseLabScene {
       `renderer        ${this.game.renderer?.type === Phaser.WEBGL ? 'WEBGL' : 'AUTO'}`,
       `intensity       ${this.intensity.toFixed(2)}x`,
       `autoplay        ${this.autoShowcase ? 'ON' : 'OFF'}`,
-      `target          ${Math.round(this.target.x)} / ${Math.round(this.target.y)}`,
+      `generated art   ${atlasHas(this, 'vfx_crescent') ? 'LOADED' : 'FALLBACK'}`,
       `blend mode      ADD`,
       `camera shake    ENABLED`,
-      `reusable cues   slash / burst / ring / bolt / heal`,
     ]);
   }
 }

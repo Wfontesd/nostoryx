@@ -1,6 +1,7 @@
 import { LABS, THEME } from '../theme.js';
 import { VfxDirector } from '../systems/vfx.js';
 import { session } from '../systems/session.js';
+import { HERO_ART, addAtlasArt, atlasHas, setAtlasArt } from '../systems/generated-art.js';
 
 export class BaseLabScene extends Phaser.Scene {
   constructor(key) {
@@ -30,9 +31,7 @@ export class BaseLabScene extends Phaser.Scene {
     const addLayer = (key, depth, factor, displayWidth = width * 1.12, displayHeight = height) => {
       if (!this.textures.exists(key)) return null;
       const layer = this.add.image(width / 2, height / 2, key)
-        .setDisplaySize(displayWidth, displayHeight)
-        .setScrollFactor(0)
-        .setDepth(depth);
+        .setDisplaySize(displayWidth, displayHeight).setScrollFactor(0).setDepth(depth);
       this.parallaxLayers.push({ layer, factor, baseX: width / 2 });
       return layer;
     };
@@ -40,6 +39,12 @@ export class BaseLabScene extends Phaser.Scene {
     addLayer('bg-sky', -120, 0.015, width * 1.16, height);
     addLayer('bg-far', -112, 0.035, width * 1.18, height);
     addLayer('bg-mid', -104, 0.065, width * 1.2, height);
+
+    if (atlasHas(this, 'floating_castle')) {
+      const castle = addAtlasArt(this, width * 0.82, height * 0.49, 'floating_castle', { height: 270, alpha: 0.28, originY: 0.5 });
+      castle?.setDepth(-102).setScrollFactor(0);
+      if (castle) this.parallaxLayers.push({ layer: castle, factor: 0.05, baseX: width * 0.82 });
+    }
 
     const haze = this.add.graphics().setScrollFactor(0).setDepth(-98);
     haze.fillStyle(accent, 0.035).fillEllipse(width * 0.28, height - 155, width * 0.55, 120);
@@ -51,12 +56,13 @@ export class BaseLabScene extends Phaser.Scene {
       this.parallaxLayers.push({ layer: front, factor: 0.1, baseX: width / 2 });
     }
 
+    if (atlasHas(this, 'ruin_pillar')) addAtlasArt(this, 78, height - 80, 'ruin_pillar', { height: 240, alpha: 0.46 })?.setDepth(1);
+    if (atlasHas(this, 'foliage_cluster')) addAtlasArt(this, width - 130, height - 65, 'foliage_cluster', { height: 150, alpha: 0.72 })?.setDepth(3);
+
     for (let i = 0; i < 18; i += 1) {
       const mote = this.add.image((i * 149 + 31) % width, 90 + ((i * 89) % Math.max(1, height - 230)), i % 5 === 0 ? 'fx-spark' : 'fx-dot')
-        .setTint(i % 3 === 0 ? accent : 0xffdfac)
-        .setAlpha(i % 5 === 0 ? 0.11 : 0.075)
-        .setScale(i % 5 === 0 ? 0.22 : 0.16)
-        .setScrollFactor(0).setDepth(-91);
+        .setTint(i % 3 === 0 ? accent : 0xffdfac).setAlpha(i % 5 === 0 ? 0.11 : 0.075)
+        .setScale(i % 5 === 0 ? 0.22 : 0.16).setScrollFactor(0).setDepth(-91);
       this.tweens.add({ targets: mote, y: mote.y - 20 - (i % 4) * 6, x: mote.x + ((i % 2) ? 9 : -9),
         alpha: { from: mote.alpha, to: 0.015 }, duration: 2600 + i * 90, yoyo: true, repeat: -1,
         delay: i * 100, ease: 'Sine.easeInOut' });
@@ -67,18 +73,17 @@ export class BaseLabScene extends Phaser.Scene {
     const { width } = this.scale;
     const tag = this.add.container(14, 13).setScrollFactor(0).setDepth(this.uiDepth);
     const bg = this.add.graphics();
-    bg.fillStyle(0x0a0b18, 0.74).fillRoundedRect(0, 0, 235, 40, 7);
-    bg.lineStyle(1, 0xffffff, 0.11).strokeRoundedRect(0, 0, 235, 40, 7);
+    bg.fillStyle(0x0a0b18, 0.74).fillRoundedRect(0, 0, 250, 40, 7);
+    bg.lineStyle(1, 0xffffff, 0.11).strokeRoundedRect(0, 0, 250, 40, 7);
     bg.fillStyle(accent, 0.95).fillRect(0, 0, 4, 40);
     const name = this.add.text(14, 6, title.toUpperCase(), { fontFamily: 'Trebuchet MS, system-ui', fontSize: '13px', fontStyle: '700', color: '#fff4df' });
-    const sub = this.add.text(14, 23, subtitle, { fontFamily: 'Trebuchet MS, system-ui', fontSize: '8px', color: '#c6c2d5' }).setCrop(0, 0, 205, 12);
+    const sub = this.add.text(14, 23, subtitle, { fontFamily: 'Trebuchet MS, system-ui', fontSize: '8px', color: '#c6c2d5' }).setCrop(0, 0, 220, 12);
     tag.add([bg, name, sub]);
 
-    const shortcuts = this.add.text(width - 14, 17, 'F2 DEBUG   H HELP   ESC LABS', {
+    this.add.text(width - 14, 17, 'F2 DEBUG   H HELP   ESC LABS', {
       fontFamily: 'Trebuchet MS, system-ui', fontSize: '9px', fontStyle: '700', color: '#efe8f2',
       stroke: '#111323', strokeThickness: 3,
-    }).setOrigin(1, 0).setScrollFactor(0).setDepth(this.uiDepth);
-    shortcuts.setAlpha(0.78);
+    }).setOrigin(1, 0).setScrollFactor(0).setDepth(this.uiDepth).setAlpha(0.78);
   }
 
   createGlobalKeys() {
@@ -106,7 +111,6 @@ export class BaseLabScene extends Phaser.Scene {
         }
       }
     }
-
     this.updatePlayerPresentation(time ?? 0);
     this.updateParallax();
   }
@@ -116,40 +120,56 @@ export class BaseLabScene extends Phaser.Scene {
     const width = this.scale.width;
     const focusX = this.player?.x ?? width / 2;
     const offset = focusX - width / 2;
-    for (const { layer, factor, baseX } of this.parallaxLayers) {
-      if (layer?.active) layer.x = baseX - offset * factor;
+    for (const { layer, factor, baseX } of this.parallaxLayers) if (layer?.active) layer.x = baseX - offset * factor;
+  }
+
+  heroArt() { return this.player?.getData('generatedArt') ?? null; }
+
+  setHeroState(state, time = 0, duration = 0) {
+    const p = this.player;
+    const art = this.heroArt();
+    const cfg = HERO_ART[state] ?? HERO_ART.idle;
+    if (p && duration > 0) p.setData('visualLockUntil', time + duration);
+    if (!art) {
+      const fallback = { idle: 'player', runA: 'player-run-a', runB: 'player-run-b', jump: 'player-jump', light: 'player-light', heavy: 'player-heavy', skill: 'player-skill', dash: 'player-run-b' }[state] ?? 'player';
+      if (p && this.textures.exists(fallback)) p.setTexture(fallback).setVisible(true);
+      return;
     }
+    setAtlasArt(art, cfg.frame, { height: cfg.height, flipX: (this.controller?.facing ?? 1) < 0 });
+    art.setData('heroState', state);
+    this.syncHeroArt();
   }
 
   playPlayerAction(action, time, duration = 180) {
-    if (!this.player) return;
-    const map = { light: 'player-light', heavy: 'player-heavy', skill: 'player-skill' };
-    const key = map[action] ?? 'player-light';
-    if (this.textures.exists(key)) this.player.setTexture(key);
-    this.player.setData('visualAction', action);
-    this.player.setData('visualLockUntil', time + duration);
+    this.setHeroState(action, time, duration);
+    this.player?.setData('visualAction', action);
+  }
+
+  syncHeroArt() {
+    const p = this.player;
+    const art = this.heroArt();
+    if (!p || !art) return;
+    const state = art.getData('heroState') ?? 'idle';
+    const cfg = HERO_ART[state] ?? HERO_ART.idle;
+    const facing = this.controller?.facing ?? 1;
+    art.setPosition(p.x + cfg.ox * facing, p.y + 48 + cfg.oy).setFlipX(facing < 0);
   }
 
   updatePlayerPresentation(time) {
     const p = this.player;
     if (!p?.body) return;
-
+    const art = this.heroArt();
     const lockUntil = Number(p.getData('visualLockUntil') ?? 0);
-    if (lockUntil > time) return;
-    if (this.attacking && this.textures.exists('player-light')) {
-      if (p.texture.key !== 'player-light') p.setTexture('player-light');
-      return;
-    }
+    if (lockUntil > time) { this.syncHeroArt(); return; }
 
     const grounded = Boolean(p.body.blocked.down || p.body.touching.down);
     const vx = p.body.velocity.x;
     const vy = p.body.velocity.y;
-    let key = 'player';
-    if (!grounded && Math.abs(vy) > 20) key = 'player-jump';
-    else if (Math.abs(vx) > 35) key = Math.floor(time / 105) % 2 ? 'player-run-a' : 'player-run-b';
-
-    if (this.textures.exists(key) && p.texture.key !== key) p.setTexture(key);
-    p.setFlipX((this.controller?.facing ?? (p.flipX ? -1 : 1)) < 0);
+    let state = 'idle';
+    if (!grounded && Math.abs(vy) > 20) state = 'jump';
+    else if (Math.abs(vx) > 35) state = Math.floor(time / 105) % 2 ? 'runA' : 'runB';
+    if (art?.getData('heroState') !== state) this.setHeroState(state);
+    else this.syncHeroArt();
   }
 
   toggleDeveloperOverlay() {
@@ -163,13 +183,19 @@ export class BaseLabScene extends Phaser.Scene {
     this.events.on('player-land', (x, y) => {
       this.vfx.groundDust(x, y + 42, { color: 0xd7c6a7 });
       this.vfx.burst(x, y + 38, { color: 0xe1d2b7, count: 7, speed: 70, scale: 0.3, gravity: 25 });
+      const art = this.heroArt();
+      if (art && atlasHas(this, HERO_ART.land.frame)) {
+        this.setHeroState('land', this.time.now, 95);
+      }
     });
     this.events.on('player-dash', (x, y) => {
-      if (this.player) {
-        this.vfx.afterImage(this.player, { color: this.accent, alpha: 0.3, drift: 34, duration: 210 });
-        this.time.delayedCall(42, () => this.player && this.vfx.afterImage(this.player, { color: 0x86ecff, alpha: 0.18, drift: 26, duration: 190 }));
+      this.setHeroState('dash', this.time.now, 150);
+      const art = this.heroArt() ?? this.player;
+      if (art) {
+        this.vfx.afterImage(art, { color: this.accent, alpha: 0.3, drift: 34, duration: 210 });
+        this.time.delayedCall(42, () => art.active && this.vfx.afterImage(art, { color: 0x86ecff, alpha: 0.18, drift: 26, duration: 190 }));
       }
-      this.vfx.burst(x, y + 26, { color: this.accent, count: 8, speed: 110, scale: 0.36 });
+      this.vfx.dashTrail(x, y + 12, (this.controller?.facing ?? 1));
     });
   }
 
@@ -220,10 +246,16 @@ export class BaseLabScene extends Phaser.Scene {
   }
 
   createPlayer(x, y) {
-    const player = this.physics.add.sprite(x, y, 'player').setDepth(20).setCollideWorldBounds(true).setScale(0.9);
+    const generated = atlasHas(this, HERO_ART.idle.frame);
+    const player = this.physics.add.sprite(x, y, 'player').setDepth(20).setCollideWorldBounds(true).setScale(0.9).setVisible(!generated);
     player.body.setSize(42, 74).setOffset(27, 27);
     player.setMaxVelocity(900, 1100);
     player.setData('visualLockUntil', 0);
+    if (generated) {
+      const art = addAtlasArt(this, x, y + 48, HERO_ART.idle.frame, { height: HERO_ART.idle.height });
+      art?.setDepth(20).setData('heroState', 'idle');
+      player.setData('generatedArt', art);
+    }
     return player;
   }
 

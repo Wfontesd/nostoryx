@@ -6,11 +6,11 @@ export class BootScene extends Phaser.Scene {
   preload() {
     const svg = (key, path, width, height) => this.load.svg(key, `public/art/${path}`, { width, height });
 
+    // Existing vector art remains as a lightweight fallback if generated art fails to load.
     svg('bg-sky', 'backgrounds/lab-sky.svg', 1400, 760);
     svg('bg-far', 'backgrounds/lab-far.svg', 1500, 760);
     svg('bg-mid', 'backgrounds/lab-mid.svg', 1500, 760);
     svg('bg-front', 'backgrounds/lab-front.svg', 1500, 220);
-
     svg('player', 'hero/hero-idle.svg', 96, 112);
     svg('player-run-a', 'hero/hero-run-a.svg', 96, 112);
     svg('player-run-b', 'hero/hero-run-b.svg', 96, 112);
@@ -18,11 +18,9 @@ export class BootScene extends Phaser.Scene {
     svg('player-light', 'hero/hero-light.svg', 126, 112);
     svg('player-heavy', 'hero/hero-heavy.svg', 126, 126);
     svg('player-skill', 'hero/hero-skill.svg', 132, 122);
-
     svg('brute', 'enemies/training-brute.svg', 116, 126);
     svg('slime', 'enemies/rune-slime.svg', 76, 62);
     svg('wisp', 'enemies/rune-wisp.svg', 74, 82);
-
     svg('skill-light', 'ui/skill-quick-slash.svg', 72, 72);
     svg('skill-heavy', 'ui/skill-breaker.svg', 72, 72);
     svg('skill-arc', 'ui/skill-arc-surge.svg', 72, 72);
@@ -31,6 +29,18 @@ export class BootScene extends Phaser.Scene {
   }
 
   create() {
+    this.initialize().catch((error) => {
+      console.warn('[NOSTORYX] Generated atlas unavailable; using vector fallbacks.', error);
+      this.finishBoot();
+    });
+  }
+
+  async initialize() {
+    await this.loadGeneratedAtlas();
+    this.finishBoot();
+  }
+
+  finishBoot() {
     this.createFallbackTextures();
     document.querySelector('#boot-status')?.classList.add('hidden');
 
@@ -40,6 +50,42 @@ export class BootScene extends Phaser.Scene {
       vfx: 'VfxLab', craft: 'CraftLab', ui: 'UiLab',
     };
     this.scene.start(map[requested] ?? 'LabHub');
+  }
+
+  async loadGeneratedAtlas() {
+    const root = new URL('public/generated/', window.location.href);
+    const [metadataResponse, ...partResponses] = await Promise.all([
+      fetch(new URL('nostoryx-generated-atlas.json', root), { cache: 'no-store' }),
+      ...Array.from({ length: 15 }, (_, index) => fetch(new URL(`atlas.b64.${String(index).padStart(2, '0')}`, root), { cache: 'force-cache' })),
+    ]);
+
+    if (!metadataResponse.ok || partResponses.some((response) => !response.ok)) {
+      throw new Error('Generated art atlas files could not be loaded.');
+    }
+
+    const [metadata, ...parts] = await Promise.all([
+      metadataResponse.json(),
+      ...partResponses.map((response) => response.text()),
+    ]);
+    const base64 = parts.join('').replace(/\s+/g, '');
+    if (!base64.startsWith('iVBOR')) throw new Error('Generated art atlas payload is not a PNG.');
+
+    const image = new Image();
+    image.decoding = 'async';
+    await new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = () => reject(new Error('Generated art atlas PNG could not be decoded.'));
+      image.src = `data:image/png;base64,${base64}`;
+    });
+
+    if (this.textures.exists('generated-atlas')) this.textures.remove('generated-atlas');
+    const texture = this.textures.addImage('generated-atlas', image);
+    if (!texture || !metadata?.frames) throw new Error('Generated atlas texture could not be registered.');
+
+    for (const [name, frame] of Object.entries(metadata.frames)) {
+      if (!frame || frame.w <= 0 || frame.h <= 0) continue;
+      if (!texture.has(name)) texture.add(name, 0, frame.x, frame.y, frame.w, frame.h);
+    }
   }
 
   texture(key, width, height, draw) {
@@ -63,7 +109,6 @@ export class BootScene extends Phaser.Scene {
     });
     this.texture('slime', 70, 54, (g) => g.fillStyle(0x59c77b, 1).fillEllipse(35, 34, 58, 34));
     this.texture('wisp', 64, 74, (g) => g.fillStyle(0xa58cff, 0.9).fillCircle(32, 28, 20));
-
     this.texture('platform', 128, 28, (g) => {
       g.fillStyle(0x1a2638, 1).fillRect(0, 7, 128, 21);
       g.fillStyle(0x5d9c69, 1).fillRect(0, 2, 128, 8);
@@ -106,7 +151,6 @@ export class BootScene extends Phaser.Scene {
       g.lineStyle(2, THEME.red, 0.75).strokeCircle(32, 32, 24);
       g.lineStyle(1, THEME.red, 0.35).strokeCircle(32, 32, 14);
     });
-
     this.texture('skill-light', 72, 72, (g) => { g.fillStyle(0x1b2940, 1).fillRect(0, 0, 72, 72); g.lineStyle(6, 0x8fd3ff, 1).beginPath().arc(22, 49, 34, -1.1, 0.5).strokePath(); });
     this.texture('skill-heavy', 72, 72, (g) => { g.fillStyle(0x3a2619, 1).fillRect(0, 0, 72, 72); g.fillStyle(0xffb45f, 1).fillTriangle(15, 58, 40, 12, 51, 22); });
     this.texture('skill-arc', 72, 72, (g) => { g.fillStyle(0x251d45, 1).fillRect(0, 0, 72, 72); g.lineStyle(5, 0xb991ff, 1).strokeCircle(36, 36, 22); });
